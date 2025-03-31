@@ -122,4 +122,8 @@ public class BoidsModel {
     public double getPerceptionRadius() {
     	return perceptionRadius;
     }
+
+    public void setBoidsNumber(int n) {
+        this.boids = generateBoids(n);
+    }
 }
