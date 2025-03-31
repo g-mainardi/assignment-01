@@ -18,7 +18,6 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
     public BoidsSimulatorPlatform(BoidsModel model) {
         this.model = model;
         view = Optional.empty();
-        initWorkers(model);
     }
 
     private void initWorkers(BoidsModel model) {
@@ -35,7 +34,7 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
     }
 
     private void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
-        while (!interrupted) {
+        while (model.isRunning()) {
             boids.forEach(boid -> boid.updateVelocity(model));
             try {
                 velBarrier.await();
@@ -60,9 +59,14 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
 
     @Override
     public void runSimulation() {
-        workers.forEach(Thread::start);
+        boolean starting = true;
         while (true) {
-            if (!interrupted) {
+            if (model.isRunning()) {
+                if(starting){
+                    this.initWorkers(model);
+                    workers.forEach(Thread::start);
+                    starting = false;
+                }
                 var t0 = System.currentTimeMillis();
                 if (view.isPresent()) {
                     view.get().update(framerate);
@@ -79,6 +83,14 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
                         framerate = (int) (1000 / dtElapsed);
                     }
                 }
+            } else if(!starting) {
+                this.workers.forEach(t -> {
+                    try {
+                        t.join();
+                    } catch (InterruptedException ignore) {}
+                });
+                this.workers.clear();
+                starting = true;
             }
         }
     }

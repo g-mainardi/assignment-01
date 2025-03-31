@@ -58,20 +58,23 @@ public class BoidsView implements ChangeListener {
 	}
 
 	private JButton makeStartAndStopButton() {
-		final JButton startButton;
-		startButton = new JButton("start");
+		final JButton startButton = new JButton("start");
 		startButton.addActionListener(e -> {
 			var btnText = startButton.getText();
 			if(btnText.equals("start")) {
+				System.out.println("start clicked");
 				var inputText = numBoidsField.getText();
 				try {
 					int newBoidsNumber = Integer.parseInt(inputText);
-					//todo
+					model.setBoidsNumber(newBoidsNumber);
+					model.turnOn();
 					numBoidsField.setText("");
 					startButton.setText("stop");
+					System.out.println("start executed");
 				} catch (NumberFormatException ignored) {}
 			} else {
 				//todo
+				model.turnOff();
 				startButton.setText("start");
 			}
 		});
