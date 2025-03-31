@@ -2,18 +2,14 @@ package pcd.ass01;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
-    private BoidsModel model;
-
-    private List<Thread> workers = new ArrayList<>();
+    private final List<Thread> workers = new ArrayList<>();
 
     public BoidsSimulatorPlatform(BoidsModel model) {
-        this.model = model;
-        view = Optional.empty();
+        super(model);
     }
 
     private void initWorkers(BoidsModel model) {

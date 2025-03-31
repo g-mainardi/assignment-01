@@ -7,11 +7,17 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public abstract class AbstractBoidsSimulator implements BoidsSimulator {
+    protected BoidsModel model;
     protected Optional<BoidsView> view;
 
     private static final int FRAMERATE = 50;
     private int framerate;
     protected volatile boolean LOOP = true;
+
+    protected AbstractBoidsSimulator(BoidsModel model) {
+        this.model = model;
+        this.view = Optional.empty();
+    }
 
     @Override
     public void attachView(BoidsView view) {

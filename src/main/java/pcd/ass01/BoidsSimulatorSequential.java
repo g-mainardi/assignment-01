@@ -1,14 +1,9 @@
 package pcd.ass01;
 
-import java.util.Optional;
-
 public class BoidsSimulatorSequential extends AbstractBoidsSimulator implements BoidsSimulator{
 
-    private BoidsModel model;
-
     public BoidsSimulatorSequential(BoidsModel model) {
-        this.model = model;
-        view = Optional.empty();
+        super(model);
     }
 
     public void runSimulation() {
