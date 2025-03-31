@@ -59,11 +59,6 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
     }
 
     @Override
-    public void updateModel(BoidsModel model) {
-        this.model = model;
-    }
-
-    @Override
     public void runSimulation() {
         workers.forEach(Thread::start);
         while (true) {
@@ -109,15 +104,5 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
             partitions.get(i % numberOfPartitions).add(elems.get(i));
         }
         return partitions;
-    }
-
-    @Override
-    public void resumeSimulation() {
-        interrupted = false;
-    }
-
-    @Override
-    public void stopSimulation() {
-        interrupted = true;
     }
 }

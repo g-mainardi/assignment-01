@@ -11,9 +11,6 @@ public interface BoidsSimulator {
         };
     }
     void attachView(BoidsView view);
-    void updateModel(BoidsModel model);
 
     void runSimulation();
-    void resumeSimulation();
-    void stopSimulation();
 }

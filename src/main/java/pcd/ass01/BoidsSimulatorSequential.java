@@ -20,11 +20,6 @@ public class BoidsSimulatorSequential implements BoidsSimulator {
         this.view = Optional.of(view);
     }
 
-    @Override
-    public void updateModel(BoidsModel model) {
-        this.model = model;
-    }
-
     public void runSimulation() {
         while (true) {
             if (!interrupted) {
@@ -69,15 +64,5 @@ public class BoidsSimulatorSequential implements BoidsSimulator {
                 }
             }
         }
-    }
-
-    @Override
-    public void resumeSimulation() {
-        interrupted = false;
-    }
-
-    @Override
-    public void stopSimulation() {
-        interrupted = true;
     }
 }
