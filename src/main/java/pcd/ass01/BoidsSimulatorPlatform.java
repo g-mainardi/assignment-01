@@ -13,7 +13,7 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
     private static final int FRAMERATE = 50;
     private int framerate;
     private List<Thread> workers = new ArrayList<>();
-    private boolean interrupted = false;
+    private volatile boolean LOOP = true;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         this.model = model;
@@ -60,7 +60,7 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
     @Override
     public void runSimulation() {
         boolean starting = true;
-        while (true) {
+        while (LOOP) {
             if (model.isRunning()) {
                 if(starting){
                     this.initWorkers(model);
