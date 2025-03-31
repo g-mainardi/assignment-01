@@ -5,7 +5,7 @@ public interface BoidsSimulator {
     static BoidsSimulator getSimulator(BoidsModel model, SimulatorType type) {
         return switch (type) {
             case SEQUENTIAL -> new BoidsSimulatorSequential(model);
-            case PLATFORM -> null;
+            case PLATFORM -> new BoidsSimulatorPlatform(model);
             case EXECUTORS -> null;
             case VIRTUAL -> null;
         };
