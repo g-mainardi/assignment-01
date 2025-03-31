@@ -68,13 +68,12 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
                     view.get().update(framerate);
                     var t1 = System.currentTimeMillis();
                     var dtElapsed = t1 - t0;
-                    var framratePeriod = 1000 / FRAMERATE;
+                    var frameratePeriod = 1000 / FRAMERATE;
 
-                    if (dtElapsed < framratePeriod) {
+                    if (dtElapsed < frameratePeriod) {
                         try {
-                            Thread.sleep(framratePeriod - dtElapsed);
-                        } catch (Exception ex) {
-                        }
+                            Thread.sleep(frameratePeriod - dtElapsed);
+                        } catch (Exception ignore) {}
                         framerate = FRAMERATE;
                     } else {
                         framerate = (int) (1000 / dtElapsed);
