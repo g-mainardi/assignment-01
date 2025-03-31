@@ -10,7 +10,10 @@ public interface BoidsSimulator {
             case VIRTUAL -> null;
         };
     }
-
     void attachView(BoidsView view);
+    void updateModel(BoidsModel model);
+
     void runSimulation();
+    void resumeSimulation();
+    void stopSimulation();
 }
