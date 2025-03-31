@@ -9,46 +9,80 @@ import java.util.Hashtable;
 
 public class BoidsView implements ChangeListener {
 
-	private JFrame frame;
-	private BoidsPanel boidsPanel;
+    private final BoidsPanel boidsPanel;
 	private JSlider cohesionSlider, separationSlider, alignmentSlider;
-	private BoidsModel model;
+	private JTextField numBoidsField;
+    private BoidsModel model;
 	private int width, height;
-	
+
 	public BoidsView(BoidsModel model, int width, int height) {
 		this.model = model;
 		this.width = width;
 		this.height = height;
-		
-		frame = new JFrame("Boids Simulation");
+
+        JFrame frame = new JFrame("Boids Simulation");
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel cp = new JPanel();
-		LayoutManager layout = new BorderLayout();
-		cp.setLayout(layout);
+		cp.setLayout(new BorderLayout());
 
         boidsPanel = new BoidsPanel(this, model);
 		cp.add(BorderLayout.CENTER, boidsPanel);
+		cp.add(BorderLayout.SOUTH, makeControlPanel());
 
-        JPanel slidersPanel = new JPanel();
-        
-        cohesionSlider = makeSlider();
-        separationSlider = makeSlider();
-        alignmentSlider = makeSlider();
-        
-        slidersPanel.add(new JLabel("Separation"));
-        slidersPanel.add(separationSlider);
-        slidersPanel.add(new JLabel("Alignment"));
-        slidersPanel.add(alignmentSlider);
-        slidersPanel.add(new JLabel("Cohesion"));
-        slidersPanel.add(cohesionSlider);
-		        
-		cp.add(BorderLayout.SOUTH, slidersPanel);
-
-		frame.setContentPane(cp);	
-		
+		frame.setContentPane(cp);
         frame.setVisible(true);
+	}
+
+	private JPanel makeControlPanel() {
+		JPanel controlPanel = new JPanel();
+
+		cohesionSlider = makeSlider();
+		separationSlider = makeSlider();
+		alignmentSlider = makeSlider();
+		numBoidsField = makeBoidsNumberField();
+        JButton startButton = makeStartAndStopButton();
+
+		controlPanel.add(new JLabel("Separation"));
+		controlPanel.add(separationSlider);
+		controlPanel.add(new JLabel("Alignment"));
+		controlPanel.add(alignmentSlider);
+		controlPanel.add(new JLabel("Cohesion"));
+		controlPanel.add(cohesionSlider);
+		controlPanel.add(new JLabel("Count"));
+		controlPanel.add(numBoidsField);
+		controlPanel.add(startButton);
+
+		return controlPanel;
+	}
+
+	private JButton makeStartAndStopButton() {
+		final JButton startButton;
+		startButton = new JButton("start");
+		startButton.addActionListener(e -> {
+			var btnText = startButton.getText();
+			if(btnText.equals("start")) {
+				var inputText = numBoidsField.getText();
+				try {
+					int newBoidsNumber = Integer.parseInt(inputText);
+					//todo
+					numBoidsField.setText("");
+					startButton.setText("stop");
+				} catch (NumberFormatException ignored) {}
+			} else {
+				//todo
+				startButton.setText("start");
+			}
+		});
+		return startButton;
+	}
+
+	private JTextField makeBoidsNumberField() {
+		final JTextField numBoidsField;
+		numBoidsField = new JTextField(5);
+		numBoidsField.setText(Integer.toString(BoidsSimulation.N_BOIDS));
+		return numBoidsField;
 	}
 
 	private JSlider makeSlider() {
