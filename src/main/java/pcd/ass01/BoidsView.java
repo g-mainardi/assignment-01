@@ -62,7 +62,6 @@ public class BoidsView implements ChangeListener {
 		startButton.addActionListener(e -> {
 			var btnText = startButton.getText();
 			if(btnText.equals("start")) {
-				System.out.println("start clicked");
 				var inputText = numBoidsField.getText();
 				try {
 					int newBoidsNumber = Integer.parseInt(inputText);
@@ -70,10 +69,8 @@ public class BoidsView implements ChangeListener {
 					model.turnOn();
 					numBoidsField.setText("");
 					startButton.setText("stop");
-					System.out.println("start executed");
 				} catch (NumberFormatException ignored) {}
 			} else {
-				//todo
 				model.turnOff();
 				startButton.setText("start");
 			}

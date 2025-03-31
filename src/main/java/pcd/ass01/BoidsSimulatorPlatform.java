@@ -6,14 +6,10 @@ import java.util.Optional;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-public class BoidsSimulatorPlatform implements BoidsSimulator {
+public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
     private BoidsModel model;
-    private Optional<BoidsView> view;
 
-    private static final int FRAMERATE = 50;
-    private int framerate;
     private List<Thread> workers = new ArrayList<>();
-    private volatile boolean LOOP = true;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         this.model = model;
@@ -53,36 +49,17 @@ public class BoidsSimulatorPlatform implements BoidsSimulator {
     }
 
     @Override
-    public void attachView(BoidsView view) {
-        this.view = Optional.of(view);
-    }
-
-    @Override
     public void runSimulation() {
         boolean starting = true;
         while (LOOP) {
             if (model.isRunning()) {
+                var t0 = System.currentTimeMillis();
                 if(starting){
                     this.initWorkers(model);
                     workers.forEach(Thread::start);
                     starting = false;
                 }
-                var t0 = System.currentTimeMillis();
-                if (view.isPresent()) {
-                    view.get().update(framerate);
-                    var t1 = System.currentTimeMillis();
-                    var dtElapsed = t1 - t0;
-                    var frameratePeriod = 1000 / FRAMERATE;
-
-                    if (dtElapsed < frameratePeriod) {
-                        try {
-                            Thread.sleep(frameratePeriod - dtElapsed);
-                        } catch (Exception ignore) {}
-                        framerate = FRAMERATE;
-                    } else {
-                        framerate = (int) (1000 / dtElapsed);
-                    }
-                }
+                updateView(t0);
             } else if(!starting) {
                 this.workers.forEach(t -> {
                     try {
