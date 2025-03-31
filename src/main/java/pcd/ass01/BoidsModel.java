@@ -16,33 +16,36 @@ public class BoidsModel {
     private final double perceptionRadius;
     private final double avoidRadius;
 
-    public BoidsModel(int nboids,  
-    						double initialSeparationWeight, 
-    						double initialAlignmentWeight, 
+    public BoidsModel(int nBoids,
+                            double initialSeparationWeight,
+    						double initialAlignmentWeight,
     						double initialCohesionWeight,
-    						double width, 
+    						double width,
     						double height,
     						double maxSpeed,
     						double perceptionRadius,
     						double avoidRadius){
-        separationWeight = initialSeparationWeight;
-        alignmentWeight = initialAlignmentWeight;
-        cohesionWeight = initialCohesionWeight;
+        this.separationWeight = initialSeparationWeight;
+        this.alignmentWeight = initialAlignmentWeight;
+        this.cohesionWeight = initialCohesionWeight;
         this.width = width;
         this.height = height;
         this.maxSpeed = maxSpeed;
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
-        
-    	boids = new ArrayList<>();
-        for (int i = 0; i < nboids; i++) {
-        	P2d pos = new P2d(-width/2 + Math.random() * width, -height/2 + Math.random() * height);
-        	V2d vel = new V2d(Math.random() * maxSpeed/2 - maxSpeed/4, Math.random() * maxSpeed/2 - maxSpeed/4);
-        	boids.add(new Boid(pos, vel));
-        }
-
+        this.boids = generateBoids(nBoids);
     }
-    
+
+    private List<Boid> generateBoids(int nBoids) {
+        List<Boid> lst = new ArrayList<>();
+        for (int i = 0; i < nBoids; i++) {
+        	P2d pos = new P2d(-width /2 + Math.random() * width, -height /2 + Math.random() * height);
+        	V2d vel = new V2d(Math.random() * maxSpeed /2 - maxSpeed /4, Math.random() * maxSpeed /2 - maxSpeed /4);
+        	lst.add(new Boid(pos, vel));
+        }
+        return lst;
+    }
+
     public synchronized List<Boid> getBoids(){
     	return boids;
     }
