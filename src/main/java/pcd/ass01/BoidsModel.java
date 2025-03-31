@@ -5,7 +5,7 @@ import java.util.List;
 
 public class BoidsModel {
     
-    private final List<Boid> boids;
+    private List<Boid> boids;
     private double separationWeight; 
     private double alignmentWeight; 
     private double cohesionWeight; 
@@ -14,6 +14,7 @@ public class BoidsModel {
     private final double maxSpeed;
     private final double perceptionRadius;
     private final double avoidRadius;
+    private boolean isRunning;
 
     public BoidsModel(int nBoids,
                             double initialSeparationWeight,
@@ -33,6 +34,19 @@ public class BoidsModel {
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
         this.boids = generateBoids(nBoids);
+        this.isRunning = false;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void turnOn() {
+        isRunning = true;
+    }
+
+    public void turnOff() {
+        isRunning = false;
     }
 
     private List<Boid> generateBoids(int nBoids) {
