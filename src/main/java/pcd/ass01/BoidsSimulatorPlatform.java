@@ -7,6 +7,7 @@ import java.util.concurrent.CyclicBarrier;
 
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
     private final List<Thread> workers = new ArrayList<>();
+    private boolean toStart = false;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         super(model);
@@ -46,18 +47,16 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
 
     @Override
     public void runSimulation() {
-        boolean starting = true;
+        this.toStart = true;
         while (LOOP) {
             if (model.isRunning()) {
                 var t0 = System.currentTimeMillis();
-                if(starting){
+                if(toStart){
                     start();
-                    starting = false;
                 }
                 updateView(t0);
-            } else if(!starting) {
+            } else if(!toStart) {
                 stop();
-                starting = true;
             }
         }
     }
@@ -66,6 +65,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         this.model.generateBoids();
         this.initWorkers(model);
         this.workers.forEach(Thread::start);
+        this.toStart = false;
     }
 
     private void stop() {
@@ -76,6 +76,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         });
         this.workers.clear();
         this.model.clearBoids();
+        this.toStart = true;
     }
 
     private void startWorkersAndWait() {
