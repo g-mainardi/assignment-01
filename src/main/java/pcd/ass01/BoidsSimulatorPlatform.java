@@ -51,21 +51,29 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
             if (model.isRunning()) {
                 var t0 = System.currentTimeMillis();
                 if(starting){
-                    this.initWorkers(model);
-                    workers.forEach(Thread::start);
+                    start();
                     starting = false;
                 }
                 updateView(t0);
             } else if(!starting) {
-                this.workers.forEach(t -> {
-                    try {
-                        t.join();
-                    } catch (InterruptedException ignore) {}
-                });
-                this.workers.clear();
+                stop();
                 starting = true;
             }
         }
+    }
+
+    private void start() {
+        this.initWorkers(model);
+        this.workers.forEach(Thread::start);
+    }
+
+    private void stop() {
+        this.workers.forEach(t -> {
+            try {
+                t.join();
+            } catch (InterruptedException ignore) {}
+        });
+        this.workers.clear();
     }
 
     private void startWorkersAndWait() {
