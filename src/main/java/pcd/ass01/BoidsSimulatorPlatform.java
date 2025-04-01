@@ -63,6 +63,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
     }
 
     private void start() {
+        this.model.generateBoids();
         this.initWorkers(model);
         this.workers.forEach(Thread::start);
     }
@@ -74,6 +75,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
             } catch (InterruptedException ignore) {}
         });
         this.workers.clear();
+        this.model.clearBoids();
     }
 
     private void startWorkersAndWait() {

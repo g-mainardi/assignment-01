@@ -15,6 +15,7 @@ public class BoidsModel {
     private final double perceptionRadius;
     private final double avoidRadius;
     private boolean isRunning;
+    private int nBoids;
 
     public BoidsModel(int nBoids,
                             double initialSeparationWeight,
@@ -33,7 +34,8 @@ public class BoidsModel {
         this.maxSpeed = maxSpeed;
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
-        this.boids = generateBoids(nBoids);
+        this.boids = new ArrayList<>();
+        this.nBoids = nBoids;
         this.isRunning = false;
     }
 
@@ -49,14 +51,17 @@ public class BoidsModel {
         isRunning = false;
     }
 
-    private List<Boid> generateBoids(int nBoids) {
-        List<Boid> lst = new ArrayList<>();
+    public void generateBoids() {
         for (int i = 0; i < nBoids; i++) {
-        	P2d pos = new P2d(-width /2 + Math.random() * width, -height /2 + Math.random() * height);
-        	V2d vel = new V2d(Math.random() * maxSpeed /2 - maxSpeed /4, Math.random() * maxSpeed /2 - maxSpeed /4);
-        	lst.add(new Boid(pos, vel));
+            P2d pos = new P2d(-width /2 + Math.random() * width, -height /2 + Math.random() * height);
+            V2d vel = new V2d(Math.random() * maxSpeed /2 - maxSpeed /4, Math.random() * maxSpeed /2 - maxSpeed /4);
+            this.boids.add(new Boid(pos, vel));
         }
-        return lst;
+    }
+
+    public void clearBoids() {
+        this.nBoids = 0;
+        this.boids = new ArrayList<>();
     }
     
     public List<Boid> getBoids(){
@@ -124,6 +129,6 @@ public class BoidsModel {
     }
 
     public void setBoidsNumber(int n) {
-        this.boids = generateBoids(n);
+        this.nBoids = n;
     }
 }
