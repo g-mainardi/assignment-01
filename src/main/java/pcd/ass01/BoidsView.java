@@ -65,6 +65,9 @@ public class BoidsView implements ChangeListener {
 				var inputText = numBoidsField.getText();
 				try {
 					int newBoidsNumber = Integer.parseInt(inputText);
+					if (newBoidsNumber <= 0) {
+						throw new NumberFormatException();
+					}
 					model.setBoidsNumber(newBoidsNumber);
 					model.turnOn();
 					numBoidsField.setText("");
