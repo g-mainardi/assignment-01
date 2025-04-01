@@ -66,6 +66,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         this.initWorkers(model);
         this.workers.forEach(Thread::start);
         this.toStart = false;
+        this.view.ifPresent(BoidsView::enableStartStopButton);
     }
 
     private void stop() {
@@ -77,6 +78,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         this.workers.clear();
         this.model.clearBoids();
         this.toStart = true;
+        this.view.ifPresent(BoidsView::enableStartStopButton);
     }
 
     private void startWorkersAndWait() {

@@ -9,9 +9,12 @@ import java.util.Hashtable;
 
 public class BoidsView implements ChangeListener {
 
-    private final BoidsPanel boidsPanel;
+	public static final String START = "start";
+	public static final String STOP = "stop";
+	private final BoidsPanel boidsPanel;
 	private JSlider cohesionSlider, separationSlider, alignmentSlider;
 	private JTextField numBoidsField;
+	private JButton startButton;
     private BoidsModel model;
 	private int width, height;
 
@@ -42,7 +45,7 @@ public class BoidsView implements ChangeListener {
 		separationSlider = makeSlider();
 		alignmentSlider = makeSlider();
 		numBoidsField = makeBoidsNumberField();
-        JButton startButton = makeStartAndStopButton();
+        startButton = makeStartAndStopButton();
 
 		controlPanel.add(new JLabel("Separation"));
 		controlPanel.add(separationSlider);
@@ -58,27 +61,33 @@ public class BoidsView implements ChangeListener {
 	}
 
 	private JButton makeStartAndStopButton() {
-		final JButton startButton = new JButton("start");
-		startButton.addActionListener(e -> {
-			var btnText = startButton.getText();
-			if(btnText.equals("start")) {
+		final JButton button = new JButton("start");
+		button.addActionListener(e -> {
+			var btnText = button.getText();
+			if(btnText.equals(START)) {
 				var inputText = numBoidsField.getText();
 				try {
 					int newBoidsNumber = Integer.parseInt(inputText);
 					if (newBoidsNumber <= 0) {
 						throw new NumberFormatException();
 					}
+					button.setEnabled(false);
 					model.setBoidsNumber(newBoidsNumber);
 					model.turnOn();
 					numBoidsField.setText("");
-					startButton.setText("stop");
+					button.setText(STOP);
 				} catch (NumberFormatException ignored) {}
-			} else {
+			} else if (btnText.equals(STOP)){
+				button.setEnabled(false);
 				model.turnOff();
-				startButton.setText("start");
+				button.setText(START);
 			}
 		});
-		return startButton;
+		return button;
+	}
+
+	public void enableStartStopButton() {
+		startButton.setEnabled(true);
 	}
 
 	private JTextField makeBoidsNumberField() {
