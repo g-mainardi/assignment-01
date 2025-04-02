@@ -14,7 +14,7 @@ public class BoidsModel {
     private final double maxSpeed;
     private final double perceptionRadius;
     private final double avoidRadius;
-    private boolean isRunning;
+    private volatile boolean isRunning;
     private int nBoids;
 
     public BoidsModel(int nBoids,

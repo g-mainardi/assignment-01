@@ -48,7 +48,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
     @Override
     public void runSimulation() {
         this.toStart = true;
-        while (LOOP) {
+        while (true) {
             if (model.isRunning()) {
                 var t0 = System.currentTimeMillis();
                 if(toStart){

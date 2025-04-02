@@ -7,7 +7,7 @@ public class BoidsSimulatorSequential extends AbstractBoidsSimulator implements 
     }
 
     public void runSimulation() {
-        while (LOOP) {
+        while (true) {
             if (model.isRunning()) {
                 var t0 = System.currentTimeMillis();
                 var boids = model.getBoids();
