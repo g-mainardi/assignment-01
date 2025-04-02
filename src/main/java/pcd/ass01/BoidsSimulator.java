@@ -6,7 +6,7 @@ public interface BoidsSimulator {
         return switch (type) {
             case SEQUENTIAL -> new BoidsSimulatorSequential(model);
             case PLATFORM -> new BoidsSimulatorPlatform(model);
-            case EXECUTORS -> null;
+            case EXECUTORS -> new BoidsSimulatorExecutors(model);
             case VIRTUAL -> null;
         };
     }
