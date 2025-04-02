@@ -69,14 +69,18 @@ public class BoidsView implements ChangeListener {
 				try {
 					int newBoidsNumber = Integer.parseInt(inputText);
 					if (newBoidsNumber <= 0) {
-						throw new NumberFormatException();
+						throw new IllegalArgumentException();
 					}
 					button.setEnabled(false);
 					model.setBoidsNumber(newBoidsNumber);
 					model.turnOn();
 					numBoidsField.setText("");
 					button.setText(STOP);
-				} catch (NumberFormatException ignored) {}
+				} catch (NumberFormatException ex1) {
+					System.out.println("Input format not allowed!");
+				} catch (IllegalArgumentException ex2) {
+					System.out.println("Only positive numbers allowed!");
+				}
 			} else if (btnText.equals(STOP)){
 				button.setEnabled(false);
 				model.turnOff();
