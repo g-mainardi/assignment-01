@@ -46,6 +46,7 @@ public class BoidsView implements ChangeListener {
 		alignmentSlider = makeSlider();
 		numBoidsField = makeBoidsNumberField();
         startButton = makeStartAndStopButton();
+		resetBoidsNumberField();
 
 		controlPanel.add(new JLabel("Separation"));
 		controlPanel.add(separationSlider);
@@ -71,23 +72,34 @@ public class BoidsView implements ChangeListener {
 					if (newBoidsNumber <= 0) {
 						throw new IllegalArgumentException();
 					}
-					button.setEnabled(false);
-					model.setBoidsNumber(newBoidsNumber);
-					model.turnOn();
-					numBoidsField.setText("");
-					button.setText(STOP);
+					startAction(newBoidsNumber);
 				} catch (NumberFormatException ex1) {
 					System.out.println("Input format not allowed!");
 				} catch (IllegalArgumentException ex2) {
 					System.out.println("Only positive numbers allowed!");
 				}
 			} else if (btnText.equals(STOP)){
-				button.setEnabled(false);
-				model.turnOff();
-				button.setText(START);
+				stopAction();
 			}
 		});
 		return button;
+	}
+
+	private void stopAction() {
+		startButton.setEnabled(false);
+		numBoidsField.setEnabled(true);
+		model.turnOff();
+		resetBoidsNumberField();
+		startButton.setText(START);
+	}
+
+	private void startAction(int newBoidsNumber) {
+		startButton.setEnabled(false);
+		numBoidsField.setEnabled(false);
+		model.setBoidsNumber(newBoidsNumber);
+		model.turnOn();
+		numBoidsField.setText("");
+		startButton.setText(STOP);
 	}
 
 	public void enableStartStopButton() {
@@ -95,10 +107,11 @@ public class BoidsView implements ChangeListener {
 	}
 
 	private JTextField makeBoidsNumberField() {
-		final JTextField numBoidsField;
-		numBoidsField = new JTextField(5);
+		return new JTextField(5);
+	}
+
+	private void resetBoidsNumberField() {
 		numBoidsField.setText(Integer.toString(BoidsSimulation.N_BOIDS));
-		return numBoidsField;
 	}
 
 	private JSlider makeSlider() {
