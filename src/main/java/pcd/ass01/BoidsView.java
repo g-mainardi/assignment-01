@@ -11,10 +11,12 @@ public class BoidsView implements ChangeListener {
 
 	public static final String START = "start";
 	public static final String STOP = "stop";
+	public static final String SUSPEND = "suspend";
+	public static final String RESUME = "resume";
 	private final BoidsPanel boidsPanel;
 	private JSlider cohesionSlider, separationSlider, alignmentSlider;
 	private JTextField numBoidsField;
-	private JButton startButton;
+	private JButton startButton, suspendResumeButton;
     private BoidsModel model;
 	private int width, height;
 
@@ -46,7 +48,9 @@ public class BoidsView implements ChangeListener {
 		alignmentSlider = makeSlider();
 		numBoidsField = makeBoidsNumberField();
         startButton = makeStartAndStopButton();
-		resetBoidsNumberField();
+		suspendResumeButton = makeSuspendResumeButton();
+		this.disableSuspendResumeButton();
+		this.resetBoidsNumberField();
 
 		controlPanel.add(new JLabel("Separation"));
 		controlPanel.add(separationSlider);
@@ -57,12 +61,13 @@ public class BoidsView implements ChangeListener {
 		controlPanel.add(new JLabel("Count"));
 		controlPanel.add(numBoidsField);
 		controlPanel.add(startButton);
+		controlPanel.add(suspendResumeButton);
 
 		return controlPanel;
 	}
 
 	private JButton makeStartAndStopButton() {
-		final JButton button = new JButton("start");
+		final JButton button = new JButton(START);
 		button.addActionListener(e -> {
 			var btnText = button.getText();
 			if(btnText.equals(START)) {
@@ -85,25 +90,68 @@ public class BoidsView implements ChangeListener {
 		return button;
 	}
 
+	private JButton makeSuspendResumeButton() {
+		final JButton button = new JButton(SUSPEND);
+		button.addActionListener(e -> {
+			var btnText = button.getText();
+			if(btnText.equals(SUSPEND)) {
+				suspendAction();
+			} else if (btnText.equals(RESUME)){
+				resumeAction();
+			}
+		});
+		return button;
+	}
+
 	private void stopAction() {
-		startButton.setEnabled(false);
-		numBoidsField.setEnabled(true);
+		this.disableStartAndStopButton();
+		this.enableNumBoidsField();
 		model.turnOff();
-		resetBoidsNumberField();
+		this.resetBoidsNumberField();
 		startButton.setText(START);
+		this.disableSuspendResumeButton();
 	}
 
 	private void startAction(int newBoidsNumber) {
-		startButton.setEnabled(false);
-		numBoidsField.setEnabled(false);
+		this.disableStartAndStopButton();
+		this.disableNumBoidsField();
 		model.setBoidsNumber(newBoidsNumber);
 		model.turnOn();
 		numBoidsField.setText("");
 		startButton.setText(STOP);
+		this.enableSuspendResumeButton();
+	}
+
+	private void resumeAction() {
+		System.out.println("resume");
+	}
+
+	private void suspendAction() {
+		System.out.println("suspend");
+	}
+
+	private void enableNumBoidsField() {
+		numBoidsField.setEnabled(true);
+	}
+
+	private void disableNumBoidsField() {
+		numBoidsField.setEnabled(false);
 	}
 
 	public void enableStartStopButton() {
 		startButton.setEnabled(true);
+	}
+
+	private void disableStartAndStopButton() {
+		startButton.setEnabled(false);
+	}
+
+	private void enableSuspendResumeButton() {
+		suspendResumeButton.setEnabled(true);
+	}
+
+	private void disableSuspendResumeButton() {
+		suspendResumeButton.setEnabled(false);
 	}
 
 	private JTextField makeBoidsNumberField() {
