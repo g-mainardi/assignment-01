@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
+import static pcd.ass01.Partitioner.partition;
+
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
     private final List<Thread> workers = new ArrayList<>();
     private boolean toStart = false;
@@ -77,14 +79,4 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         this.view.ifPresent(BoidsView::enableStartStopButton);
     }
 
-    private static <E> List<List<E>> partition(List<E> elems, int numberOfPartitions) {
-        List<List<E>> partitions = new ArrayList<>();
-        for (int i = 0; i < numberOfPartitions; i++) {
-            partitions.add(new ArrayList<E>());
-        }
-        for (int i = 0; i < elems.size(); i++) {
-            partitions.get(i % numberOfPartitions).add(elems.get(i));
-        }
-        return partitions;
-    }
 }
