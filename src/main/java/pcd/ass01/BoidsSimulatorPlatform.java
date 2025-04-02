@@ -32,14 +32,14 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
             try {
                 velBarrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
-                System.out.println(e.getMessage());
+                System.out.println("Thread [" + Thread.currentThread().getName() + "] interrupted while waiting for velocity barrier");
             }
             velBarrier.reset();
             boids.forEach(boid -> boid.updatePos(model));
             try {
                 posBarrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
-                System.out.println(e.getMessage());
+                System.out.println("Thread [" + Thread.currentThread().getName() + "] interrupted while waiting for position barrier");
             }
             posBarrier.reset();
         }
@@ -70,26 +70,11 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
     }
 
     private void stop() {
-        this.workers.forEach(t -> {
-            try {
-                t.join();
-            } catch (InterruptedException ignore) {}
-        });
+        this.workers.forEach(Thread::interrupt);
         this.workers.clear();
         this.model.clearBoids();
         this.toStart = true;
         this.view.ifPresent(BoidsView::enableStartStopButton);
-    }
-
-    private void startWorkersAndWait() {
-        workers.forEach(Thread::start);
-        for (Thread worker : workers) {
-            try {
-                worker.join();
-            } catch (InterruptedException e) {
-                System.out.println("Interrupted while waiting for worker to finish");
-            }
-        }
     }
 
     private static <E> List<List<E>> partition(List<E> elems, int numberOfPartitions) {
