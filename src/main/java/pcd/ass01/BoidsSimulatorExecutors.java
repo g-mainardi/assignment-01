@@ -1,20 +1,31 @@
 package pcd.ass01;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static pcd.ass01.ListUtils.batchStreamBySize;
+import static pcd.ass01.ListUtils.partitionBySize;
 
 public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements BoidsSimulator {
 
-    public static final int BOIDS_PER_TASK = 10;
+    public static final int MAX_BOIDS_PER_TASK = 15;
+    private List<List<Boid>> batches = new ArrayList<>();
     private final ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private boolean toStart = false;
 
     protected BoidsSimulatorExecutors(BoidsModel model) {
         super(model);
+    }
+
+    private void initBatches() {
+        batches = partitionBySize(model.getBoids(), MAX_BOIDS_PER_TASK);
+    }
+
+    private void clearBatches() {
+        batches = new ArrayList<>();
     }
 
     @Override
@@ -35,22 +46,24 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
     }
 
     private void updateBoids() {
-        batchStreamBySize(model.getBoids(), BOIDS_PER_TASK)
+        batches.stream()
                 .map(batch -> exec.submit(() -> batch.forEach(boid -> boid.updateVelocity(model))))
                 .forEach(this::waitForActionDone);
-        batchStreamBySize(model.getBoids(), BOIDS_PER_TASK)
+        batches.stream()
                 .map(batch -> exec.submit(() -> batch.forEach(boid -> boid.updatePos(model))))
                 .forEach(this::waitForActionDone);
     }
 
     private void stop() {
         model.clearBoids();
+        this.clearBatches();
         view.ifPresent(BoidsView::enableStartStopButton);
         toStart = true;
     }
 
     private void start() {
         model.generateBoids();
+        this.initBatches();
         view.ifPresent(BoidsView::enableStartStopButton);
         toStart = false;
     }

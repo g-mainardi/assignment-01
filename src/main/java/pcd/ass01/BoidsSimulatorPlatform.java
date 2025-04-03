@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import static pcd.ass01.ListUtils.partition;
+import static pcd.ass01.ListUtils.partitionByNumber;
 
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
     private final List<Thread> workers = new ArrayList<>();
@@ -20,7 +20,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         var boids = model.getBoids();
         int nThreads = Runtime.getRuntime().availableProcessors();
 
-        List<List<Boid>> partitions = partition(boids, nThreads);
+        List<List<Boid>> partitions = partitionByNumber(boids, nThreads);
         CyclicBarrier velBarrier = new CyclicBarrier(nThreads);
         CyclicBarrier posBarrier = new CyclicBarrier(nThreads);
 
