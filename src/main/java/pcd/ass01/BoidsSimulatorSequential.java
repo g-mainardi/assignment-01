@@ -6,6 +6,16 @@ public class BoidsSimulatorSequential extends AbstractBoidsSimulator implements 
         super(model);
     }
 
+    @Override
+    protected void clear() {
+        
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
     public void runSimulation() {
         while (true) {
             if (model.isRunning()) {

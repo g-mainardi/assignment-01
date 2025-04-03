@@ -9,8 +9,6 @@ import static pcd.ass01.ListUtils.partitionByNumber;
 
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
     private final List<Thread> workers = new ArrayList<>();
-    private boolean toStart = false;
-    private boolean toResume = false;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         super(model);
@@ -75,35 +73,14 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         }
     }
 
-    private void suspend() {
-        this.toResume = true;
-        this.view.ifPresent(BoidsView::enableSuspendResumeButton);
-    }
-
-    private void resume() {
-        this.toResume = false;
-        this.view.ifPresent(BoidsView::enableSuspendResumeButton);
-    }
-
-    private void start() {
-        this.model.generateBoids();
+    protected void init() {
         this.initWorkers(model);
         this.workers.forEach(Thread::start);
-        this.toStart = false;
-        this.view.ifPresent(BoidsView::enableStartStopButton);
     }
 
-    private void stop() {
+    protected void clear() {
         this.workers.forEach(Thread::interrupt);
         this.workers.clear();
-        this.model.clearBoids();
-        this.toStart = true;
-        if (model.isSuspended()){
-            this.toResume = false;
-            this.view.ifPresent(BoidsView::resumeAction);
-        }
-        this.view.ifPresent(v -> v.update(framerate));
-        this.view.ifPresent(BoidsView::enableStartStopButton);
     }
 
 }

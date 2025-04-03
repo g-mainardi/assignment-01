@@ -1,14 +1,12 @@
 package pcd.ass01;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected BoidsModel model;
     protected Optional<BoidsView> view;
+    protected boolean toStart = false;
+    protected boolean toResume = false;
 
     private static final int FRAMERATE = 50;
     protected int framerate;
@@ -40,5 +38,39 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
             }
         }
     }
+
+    protected void suspend() {
+        this.toResume = true;
+        this.view.ifPresent(BoidsView::enableSuspendResumeButton);
+    }
+
+    protected void resume() {
+        this.toResume = false;
+        this.view.ifPresent(BoidsView::enableSuspendResumeButton);
+    }
+
+    protected void  start() {
+        this.model.generateBoids();
+        init();
+        this.toStart = false;
+        this.view.ifPresent(BoidsView::enableStartStopButton);
+    }
+
+    protected void stop() {
+        clear();
+        this.model.clearBoids();
+        this.toStart = true;
+        if (model.isSuspended()){
+            this.toResume = false;
+            this.view.ifPresent(BoidsView::resumeAction);
+        }
+        this.view.ifPresent(v -> v.update(framerate));
+        this.view.ifPresent(BoidsView::enableStartStopButton);
+
+    }
+
+    protected abstract void clear();
+
+    protected abstract void init();
 
 }

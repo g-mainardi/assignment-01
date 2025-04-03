@@ -14,7 +14,6 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
     public static final int MAX_BOIDS_PER_TASK = 15;
     private List<List<Boid>> batches = new ArrayList<>();
     private final ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    private boolean toStart = false;
 
     protected BoidsSimulatorExecutors(BoidsModel model) {
         super(model);
@@ -64,18 +63,12 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
                 .forEach(this::waitForActionDone);
     }
 
-    private void stop() {
-        model.clearBoids();
+    protected void clear() {
         this.clearBatches();
-        view.ifPresent(BoidsView::enableStartStopButton);
-        toStart = true;
     }
 
-    private void start() {
-        model.generateBoids();
+    protected void init() {
         this.initBatches();
-        view.ifPresent(BoidsView::enableStartStopButton);
-        toStart = false;
     }
 
     private <A extends Future<?>> void waitForActionDone(A action) {
