@@ -10,6 +10,7 @@ import static pcd.ass01.Partitioner.partition;
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
     private final List<Thread> workers = new ArrayList<>();
     private boolean toStart = false;
+    private boolean toResume = false;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         super(model);
@@ -30,6 +31,9 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
 
     private void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
         while (model.isRunning()) {
+            if (model.isSuspended()) {
+                continue;
+            }
             boids.forEach(boid -> boid.updateVelocity(model));
             try {
                 velBarrier.await();
@@ -50,17 +54,35 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
     @Override
     public void runSimulation() {
         this.toStart = true;
+        this.toResume = false;
         while (true) {
             if (model.isRunning()) {
                 var t0 = System.currentTimeMillis();
                 if(toStart){
                     start();
                 }
+                if (model.isSuspended()) {
+                    if (!toResume) {
+                        suspend();
+                    }
+                } else if (toResume) {
+                    resume();
+                }
                 updateView(t0);
             } else if(!toStart) {
                 stop();
             }
         }
+    }
+
+    private void suspend() {
+        this.toResume = true;
+        this.view.ifPresent(BoidsView::enableSuspendResumeButton);
+    }
+
+    private void resume() {
+        this.toResume = false;
+        this.view.ifPresent(BoidsView::enableSuspendResumeButton);
     }
 
     private void start() {

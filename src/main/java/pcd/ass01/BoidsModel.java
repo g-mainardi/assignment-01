@@ -15,6 +15,7 @@ public class BoidsModel {
     private final double perceptionRadius;
     private final double avoidRadius;
     private volatile boolean isRunning;
+    private volatile boolean isSuspended;
     private int nBoids;
 
     public BoidsModel(int nBoids,
@@ -37,6 +38,7 @@ public class BoidsModel {
         this.boids = new ArrayList<>();
         this.nBoids = nBoids;
         this.isRunning = false;
+        this.isSuspended = false;
     }
 
     public boolean isRunning() {
@@ -49,6 +51,18 @@ public class BoidsModel {
 
     public void turnOff() {
         isRunning = false;
+    }
+
+    public boolean isSuspended() {
+        return isSuspended;
+    }
+
+    public void suspend() {
+        this.isSuspended = true;
+    }
+
+    public void resume() {
+        this.isSuspended = false;
     }
 
     public void generateBoids() {

@@ -123,11 +123,15 @@ public class BoidsView implements ChangeListener {
 	}
 
 	private void resumeAction() {
-		System.out.println("resume");
+		this.disableSuspendResumeButton();
+		suspendResumeButton.setText(SUSPEND);
+		model.resume();
 	}
 
 	private void suspendAction() {
-		System.out.println("suspend");
+		this.disableSuspendResumeButton();
+		suspendResumeButton.setText(RESUME);
+		model.suspend();
 	}
 
 	private void enableNumBoidsField() {
@@ -146,7 +150,7 @@ public class BoidsView implements ChangeListener {
 		startButton.setEnabled(false);
 	}
 
-	private void enableSuspendResumeButton() {
+	public void enableSuspendResumeButton() {
 		suspendResumeButton.setEnabled(true);
 	}
 
