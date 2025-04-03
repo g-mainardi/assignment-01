@@ -5,8 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static pcd.ass01.ListUtils.batchStreamBySize;
+
 public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements BoidsSimulator {
 
+    public static final int BOIDS_PER_TASK = 10;
     private final ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private boolean toStart = false;
 
@@ -32,12 +35,11 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
     }
 
     private void updateBoids() {
-        model.getBoids().stream()
-                .map(boid -> exec.submit(() -> boid.updateVelocity(model)))
+        batchStreamBySize(model.getBoids(), BOIDS_PER_TASK)
+                .map(batch -> exec.submit(() -> batch.forEach(boid -> boid.updateVelocity(model))))
                 .forEach(this::waitForActionDone);
-
-        model.getBoids().stream()
-                .map(boid -> exec.submit(() -> boid.updatePos(model)))
+        batchStreamBySize(model.getBoids(), BOIDS_PER_TASK)
+                .map(batch -> exec.submit(() -> batch.forEach(boid -> boid.updatePos(model))))
                 .forEach(this::waitForActionDone);
     }
 
