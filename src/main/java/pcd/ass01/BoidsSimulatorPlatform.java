@@ -27,7 +27,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         }
     }
 
-    private void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
+    protected void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
         while (model.isRunning()) {
             if (model.isSuspended()) {
                 continue;

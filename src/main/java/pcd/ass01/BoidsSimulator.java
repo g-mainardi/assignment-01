@@ -7,7 +7,7 @@ public interface BoidsSimulator {
             case SEQUENTIAL -> new BoidsSimulatorSequential(model);
             case PLATFORM -> new BoidsSimulatorPlatform(model);
             case EXECUTORS -> new BoidsSimulatorExecutors(model);
-            case VIRTUAL -> null;
+            case VIRTUAL -> new BoidsSimulatorVirtual(model);
         };
     }
     void attachView(BoidsView view);
