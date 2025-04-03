@@ -11,7 +11,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected Optional<BoidsView> view;
 
     private static final int FRAMERATE = 50;
-    private int framerate;
+    protected int framerate;
 
     protected AbstractBoidsSimulator(BoidsModel model) {
         this.model = model;

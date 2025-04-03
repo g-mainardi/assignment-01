@@ -122,7 +122,7 @@ public class BoidsView implements ChangeListener {
 		this.enableSuspendResumeButton();
 	}
 
-	private void resumeAction() {
+	public void resumeAction() {
 		this.disableSuspendResumeButton();
 		suspendResumeButton.setText(SUSPEND);
 		model.resume();
