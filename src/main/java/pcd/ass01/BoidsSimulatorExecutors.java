@@ -30,14 +30,24 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
 
     @Override
     public void runSimulation() {
-        toStart = true;
+        this.toStart = true;
+        this.toResume = false;
         while (true) {
             if (model.isRunning()) {
+                var t0 = System.currentTimeMillis();
                 if (toStart) {
                     start();
                 }
-                var t0 = System.currentTimeMillis();
-                updateBoids();
+                if (model.isSuspended()) {
+                    if(!toResume) {
+                        suspend();
+                    }
+                } else {
+                    if (toResume) {
+                        resume();
+                    }
+                    updateBoids();
+                }
                 updateView(t0);
             } else if (!toStart) {
                 stop();
