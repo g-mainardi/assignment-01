@@ -16,11 +16,10 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
 
     private void initWorkers(BoidsModel model) {
         var boids = model.getBoids();
-        int nThreads = Runtime.getRuntime().availableProcessors();
 
         List<List<Boid>> partitions = partitionByNumber(boids, THREADS_NUMBER);
         MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER);
-        MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER);
+        MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::incUpdateCounter);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
@@ -55,7 +54,6 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         this.toResume = false;
         while (true) {
             if (model.isRunning()) {
-                var t0 = System.currentTimeMillis();
                 if(toStart){
                     start();
                 }
@@ -66,7 +64,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
                 } else if (toResume) {
                     resume();
                 }
-                updateView(t0);
+                view.ifPresent(view -> view.update(framerate));
             } else if(!toStart) {
                 stop();
             }
