@@ -2,6 +2,8 @@ package pcd.ass01;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BoidsModel {
     
@@ -17,6 +19,9 @@ public class BoidsModel {
     private volatile boolean isRunning;
     private volatile boolean isSuspended;
     private int nBoids;
+    private final Lock separationWeightLock;
+    private final Lock alignmentWeightLock;
+    private final Lock cohesionWeightLock;
 
     public BoidsModel(int nBoids,
                             double initialSeparationWeight,
@@ -39,6 +44,9 @@ public class BoidsModel {
         this.nBoids = nBoids;
         this.isRunning = false;
         this.isSuspended = false;
+        this.separationWeightLock = new ReentrantLock();
+        this.alignmentWeightLock = new ReentrantLock();
+        this.cohesionWeightLock = new ReentrantLock();
     }
 
     public boolean isRunning() {
@@ -106,27 +114,33 @@ public class BoidsModel {
     	return height;
     }
 
-    public synchronized void setSeparationWeight(double value) {
-    	this.separationWeight = value;
+    public void setSeparationWeight(double value) {
+        this.separationWeightLock.lock();
+        this.separationWeight = value;
+        this.separationWeightLock.unlock();
     }
 
-    public synchronized void setAlignmentWeight(double value) {
-    	this.alignmentWeight = value;
+    public void setAlignmentWeight(double value) {
+        this.alignmentWeightLock.lock();
+        this.alignmentWeight = value;
+        this.alignmentWeightLock.unlock();
     }
 
-    public synchronized void setCohesionWeight(double value) {
-    	this.cohesionWeight = value;
+    public void setCohesionWeight(double value) {
+        this.cohesionWeightLock.lock();
+        this.cohesionWeight = value;
+        this.cohesionWeightLock.unlock();
     }
 
-    public synchronized double getSeparationWeight() {
+    public double getSeparationWeight() {
     	return separationWeight;
     }
 
-    public synchronized double getCohesionWeight() {
+    public double getCohesionWeight() {
     	return cohesionWeight;
     }
 
-    public synchronized double getAlignmentWeight() {
+    public double getAlignmentWeight() {
     	return alignmentWeight;
     }
     
