@@ -33,8 +33,8 @@ public class BoidsSimulatorVirtual extends BoidsSimulatorPlatform {
     }
 
     private void initVirtualThreads() {
-        CyclicBarrier velBarrier = new CyclicBarrier(batches.size());
-        CyclicBarrier posBarrier = new CyclicBarrier(batches.size());
+        MyBarrier velBarrier = new MyBarrier(batches.size());
+        MyBarrier posBarrier = new MyBarrier(batches.size());
 
         batches.forEach(batch -> Thread.ofVirtual().start(() -> update(batch, velBarrier, posBarrier)));
     }

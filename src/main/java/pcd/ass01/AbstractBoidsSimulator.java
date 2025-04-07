@@ -49,7 +49,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
         this.view.ifPresent(BoidsView::enableSuspendResumeButton);
     }
 
-    protected void  start() {
+    protected void start() {
         this.model.generateBoids();
         init();
         this.toStart = false;
