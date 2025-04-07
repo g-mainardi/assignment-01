@@ -3,11 +3,11 @@ package pcd.ass01;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 import static pcd.ass01.ListUtils.partitionByNumber;
 
-public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator{
+public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator {
+    private static final int THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
     private final List<Thread> workers = new ArrayList<>();
 
     public BoidsSimulatorPlatform(BoidsModel model) {
@@ -16,18 +16,17 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
 
     private void initWorkers(BoidsModel model) {
         var boids = model.getBoids();
-        int nThreads = Runtime.getRuntime().availableProcessors();
 
-        List<List<Boid>> partitions = partitionByNumber(boids, nThreads);
-        CyclicBarrier velBarrier = new CyclicBarrier(nThreads);
-        CyclicBarrier posBarrier = new CyclicBarrier(nThreads);
+        List<List<Boid>> partitions = partitionByNumber(boids, THREADS_NUMBER);
+        MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER);
+        MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::incUpdateCounter);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
         }
     }
 
-    protected void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
+    protected void update(List<Boid> boids, MyBarrier velBarrier, MyBarrier posBarrier) {
         while (model.isRunning()) {
             if (model.isSuspended()) {
                 continue;
@@ -55,7 +54,6 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         this.toResume = false;
         while (true) {
             if (model.isRunning()) {
-                var t0 = System.currentTimeMillis();
                 if(toStart){
                     start();
                 }
@@ -66,7 +64,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
                 } else if (toResume) {
                     resume();
                 }
-                updateView(t0);
+                view.ifPresent(view -> view.update(framerate));
             } else if(!toStart) {
                 stop();
             }

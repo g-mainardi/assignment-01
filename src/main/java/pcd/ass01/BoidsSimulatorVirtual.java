@@ -2,7 +2,6 @@ package pcd.ass01;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CyclicBarrier;
 
 import static pcd.ass01.ListUtils.partitionBySize;
 
@@ -33,8 +32,8 @@ public class BoidsSimulatorVirtual extends BoidsSimulatorPlatform {
     }
 
     private void initVirtualThreads() {
-        CyclicBarrier velBarrier = new CyclicBarrier(batches.size());
-        CyclicBarrier posBarrier = new CyclicBarrier(batches.size());
+        MyBarrier velBarrier = new MyBarrier(batches.size());
+        MyBarrier posBarrier = new MyBarrier(batches.size(), this::incUpdateCounter);
 
         batches.forEach(batch -> Thread.ofVirtual().start(() -> update(batch, velBarrier, posBarrier)));
     }

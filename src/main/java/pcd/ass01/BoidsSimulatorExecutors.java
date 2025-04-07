@@ -33,7 +33,6 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
         this.toResume = false;
         while (true) {
             if (model.isRunning()) {
-                var t0 = System.currentTimeMillis();
                 if (toStart) {
                     start();
                 }
@@ -47,7 +46,7 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
                     }
                     updateBoids();
                 }
-                updateView(t0);
+                view.ifPresent(view -> view.update(framerate));
             } else if (!toStart) {
                 stop();
             }
@@ -61,6 +60,7 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
         batches.stream()
                 .map(batch -> exec.submit(() -> batch.forEach(boid -> boid.updatePos(model))))
                 .forEach(this::waitForActionDone);
+        incUpdateCounter();
     }
 
     protected void clear() {

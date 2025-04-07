@@ -8,12 +8,27 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected boolean toStart = false;
     protected boolean toResume = false;
 
+    public static final int FRAMERATE_UPDATE_FREQUENCY = 1000;
     private static final int FRAMERATE = 50;
     protected int framerate;
+
+    private int updateCounter = 0;
 
     protected AbstractBoidsSimulator(BoidsModel model) {
         this.model = model;
         this.view = Optional.empty();
+    }
+
+    public int getUpdateCounter() {
+        return updateCounter;
+    }
+
+    public void resetUpdateCounter() {
+        this.updateCounter = 0;
+    }
+
+    public void incUpdateCounter() {
+        this.updateCounter++;
     }
 
     @Override
@@ -49,9 +64,11 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
         this.view.ifPresent(BoidsView::enableSuspendResumeButton);
     }
 
-    protected void  start() {
+    protected void start() {
         this.model.generateBoids();
+        resetUpdateCounter();
         init();
+        new Thread(this::timer).start();
         this.toStart = false;
         this.view.ifPresent(BoidsView::enableStartStopButton);
     }
@@ -67,6 +84,25 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
         this.view.ifPresent(v -> v.update(framerate));
         this.view.ifPresent(BoidsView::enableStartStopButton);
 
+    }
+
+    private int calcFrameRate(double updates) {
+        return (int) (updates / ((double) FRAMERATE_UPDATE_FREQUENCY / 1000L));
+    }
+
+    private void timer() {
+        while (model.isRunning()) {
+            if (model.isSuspended()) {
+                continue;
+            }
+            try {
+                Thread.sleep(FRAMERATE_UPDATE_FREQUENCY);
+                framerate = calcFrameRate(getUpdateCounter());
+                resetUpdateCounter();
+            } catch (InterruptedException e) {
+                System.out.println("tirem inrettuprer");
+            }
+        }
     }
 
     protected abstract void clear();
