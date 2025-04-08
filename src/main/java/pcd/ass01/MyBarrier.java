@@ -23,18 +23,20 @@ public class MyBarrier {
     }
 
     public void await() throws InterruptedException, BrokenBarrierException {
-        if (broken) {
-            throw new BrokenBarrierException();
-        }
-
         lock.lock();
-        counter++;
-        if (counter == parties) {
-            breakBarrier();
-        } else {
-            cond.await();
+        try {
+            if (broken) {
+                throw new BrokenBarrierException();
+            }
+            counter++;
+            if (counter == parties) {
+                breakBarrier();
+            } else {
+                cond.await();
+            }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     private void breakBarrier() {
@@ -45,8 +47,12 @@ public class MyBarrier {
         }
     }
 
-    void reset() {
-        broken = false;
-        counter = 0;
+    public void reset() {
+        if(broken){
+            lock.lock();
+            broken = false;
+            counter = 0;
+            lock.unlock();
+        }
     }
 }
