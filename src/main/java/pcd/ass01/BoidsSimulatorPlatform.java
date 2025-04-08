@@ -9,21 +9,26 @@ import static pcd.ass01.ListUtils.partitionByNumber;
 public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements BoidsSimulator {
     private static final int THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
     private final List<Thread> workers = new ArrayList<>();
+    private List<Boid> boidsCopy = null;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         super(model);
     }
 
     private void initWorkers(BoidsModel model) {
-        var boids = model.getBoids();
+        boidsCopy = model.getBoidsCopy();
 
-        List<List<Boid>> partitions = partitionByNumber(boids, THREADS_NUMBER);
-        MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER);
+        List<List<Boid>> partitions = partitionByNumber(boidsCopy, THREADS_NUMBER);
+        MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER, this::updateBoidsFromCopy);
         MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::incUpdateCounter);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
         }
+    }
+
+    private void updateBoidsFromCopy() {
+        this.model.setBoids(boidsCopy);
     }
 
     protected void update(List<Boid> boids, MyBarrier velBarrier, MyBarrier posBarrier) {
