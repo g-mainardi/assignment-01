@@ -48,11 +48,11 @@ public class MyBarrier {
     }
 
     public void reset() {
-        if(broken){
-            lock.lock();
+        lock.lock();
+        if (broken) {
             broken = false;
             counter = 0;
-            lock.unlock();
         }
+        lock.unlock();
     }
 }
