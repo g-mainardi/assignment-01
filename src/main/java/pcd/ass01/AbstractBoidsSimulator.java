@@ -1,8 +1,6 @@
 package pcd.ass01;
 
 import java.util.Optional;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected BoidsModel model;
@@ -10,32 +8,14 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected boolean toStart = false;
     protected boolean toResume = false;
 
-    public static final int FRAMERATE_UPDATE_FREQUENCY = 1000;
     private static final int FRAMERATE = 50;
     protected int framerate;
 
-    private int updateCounter = 0;
-    private final Lock updateCounterLock = new ReentrantLock();
+    private long t0;
 
     protected AbstractBoidsSimulator(BoidsModel model) {
         this.model = model;
         this.view = Optional.empty();
-    }
-
-    public int getUpdateCounter() {
-        return updateCounter;
-    }
-
-    public void resetUpdateCounter() {
-        updateCounterLock.lock();
-        this.updateCounter = 0;
-        updateCounterLock.unlock();
-    }
-
-    public void incUpdateCounter() {
-        updateCounterLock.lock();
-        this.updateCounter++;
-        updateCounterLock.unlock();
     }
 
     @Override
@@ -43,7 +23,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
         this.view = Optional.of(view);
     }
 
-    protected void updateView(final long t0) {
+    protected void updateView() {
         if (view.isPresent()) {
             view.get().update();
             view.get().updateFrameRate(framerate);
@@ -51,6 +31,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
             var dtElapsed = t1 - t0;
             var frameratePeriod = 1000 / FRAMERATE;
 
+            t0 = System.currentTimeMillis();
             if (dtElapsed < frameratePeriod) {
                 try {
                     Thread.sleep(frameratePeriod - dtElapsed);
@@ -74,9 +55,8 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
 
     protected void start() {
         this.model.generateBoids();
-        resetUpdateCounter();
         init();
-        new Thread(this::timer).start();
+        this.t0 = System.currentTimeMillis();
         this.toStart = false;
         this.view.ifPresent(BoidsView::enableStartStopButton);
     }
@@ -94,26 +74,6 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
             v.updateFrameRate(0);
             v.enableStartStopButton();
         });
-    }
-
-    private int calcFrameRate(double updates) {
-        return (int) (updates / ((double) FRAMERATE_UPDATE_FREQUENCY / 1000L));
-    }
-
-    private void timer() {
-        while (model.isRunning()) {
-            if (model.isSuspended()) {
-                continue;
-            }
-            try {
-                Thread.sleep(FRAMERATE_UPDATE_FREQUENCY);
-                framerate = calcFrameRate(getUpdateCounter());
-                resetUpdateCounter();
-                this.view.ifPresent(v -> v.updateFrameRate(framerate));
-            } catch (InterruptedException e) {
-                System.out.println("tirem inrettuprer");
-            }
-        }
     }
 
     protected abstract void clear();

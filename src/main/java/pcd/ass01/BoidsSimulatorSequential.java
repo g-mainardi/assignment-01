@@ -16,32 +16,41 @@ public class BoidsSimulatorSequential extends AbstractBoidsSimulator implements 
 
     }
 
+    @Override
     public void runSimulation() {
+        this.toStart = true;
+        this.toResume = false;
         while (true) {
             if (model.isRunning()) {
-                var t0 = System.currentTimeMillis();
-                var boids = model.getBoids();
-    		/*
-    		for (Boid boid : boids) {
-                boid.update(model);
-            }
-            */
-
-                /*
-                 * Improved correctness: first update velocities...
-                 */
-                for (Boid boid : boids) {
-                    boid.updateVelocity(model);
+                if (toStart) {
+                    start();
                 }
-
-                /*
-                 * ..then update positions
-                 */
-                for (Boid boid : boids) {
-                    boid.updatePos(model);
+                if (model.isSuspended()) {
+                    if(!toResume) {
+                        suspend();
+                    }
+                } else {
+                    if (toResume) {
+                        resume();
+                    }
+                    updateBoids();
                 }
-                updateView(t0);
+                updateView();
+            } else if (!toStart) {
+                stop();
             }
+        }
+    }
+
+    private void updateBoids() {
+        var boids = model.getBoids();
+
+        for (Boid boid : boids) {
+            boid.updateVelocity(model);
+        }
+
+        for (Boid boid : boids) {
+            boid.updatePos(model);
         }
     }
 }

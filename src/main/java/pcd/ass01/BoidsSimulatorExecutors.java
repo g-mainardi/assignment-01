@@ -46,7 +46,6 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
                     }
                     updateBoids();
                 }
-                view.ifPresent(BoidsView::update);
             } else if (!toStart) {
                 stop();
             }
@@ -60,7 +59,7 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
         batches.stream()
                 .map(batch -> exec.submit(() -> batch.forEach(boid -> boid.updatePos(model))))
                 .forEach(this::waitForActionDone);
-        incUpdateCounter();
+        this.updateView();
     }
 
     protected void clear() {
