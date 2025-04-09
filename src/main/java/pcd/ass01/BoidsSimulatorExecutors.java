@@ -46,7 +46,7 @@ public class BoidsSimulatorExecutors extends AbstractBoidsSimulator implements B
                     }
                     updateBoids();
                 }
-                view.ifPresent(view -> view.update(framerate));
+                view.ifPresent(BoidsView::update);
             } else if (!toStart) {
                 stop();
             }

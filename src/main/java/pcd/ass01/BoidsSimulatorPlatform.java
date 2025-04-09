@@ -64,7 +64,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
                 } else if (toResume) {
                     resume();
                 }
-                view.ifPresent(view -> view.update(framerate));
+                view.ifPresent(BoidsView::update);
             } else if(!toStart) {
                 stop();
             }

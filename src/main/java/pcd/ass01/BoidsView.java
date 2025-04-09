@@ -182,9 +182,12 @@ public class BoidsView implements ChangeListener {
 		return slider;
 	}
 	
-	public void update(int frameRate) {
-		boidsPanel.setFrameRate(frameRate);
+	public void update() {
 		boidsPanel.repaint();
+	}
+
+	public void updateFrameRate(int frameRate) {
+		boidsPanel.setFrameRate(frameRate);
 	}
 
 	@Override

@@ -38,7 +38,8 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
 
     protected void updateView(final long t0) {
         if (view.isPresent()) {
-            view.get().update(framerate);
+            view.get().update();
+            view.get().updateFrameRate(framerate);
             var t1 = System.currentTimeMillis();
             var dtElapsed = t1 - t0;
             var frameratePeriod = 1000 / FRAMERATE;
@@ -81,9 +82,11 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
             this.toResume = false;
             this.view.ifPresent(BoidsView::resumeAction);
         }
-        this.view.ifPresent(v -> v.update(framerate));
-        this.view.ifPresent(BoidsView::enableStartStopButton);
-
+        this.view.ifPresent(v -> {
+            v.update();
+            v.updateFrameRate(0);
+            v.enableStartStopButton();
+        });
     }
 
     private int calcFrameRate(double updates) {
@@ -99,6 +102,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
                 Thread.sleep(FRAMERATE_UPDATE_FREQUENCY);
                 framerate = calcFrameRate(getUpdateCounter());
                 resetUpdateCounter();
+                this.view.ifPresent(v -> v.updateFrameRate(framerate));
             } catch (InterruptedException e) {
                 System.out.println("tirem inrettuprer");
             }
