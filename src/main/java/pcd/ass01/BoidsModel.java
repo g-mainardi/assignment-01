@@ -90,18 +90,6 @@ public class BoidsModel {
     	return boids;
     }
 
-    public void setBoids(List<Boid> boids){
-        this.boids = boids;
-    }
-
-    public List<Boid> getBoidsCopy(){
-        List<Boid> copy = new ArrayList<>();
-        for (Boid b : boids) {
-            copy.add(new Boid(b));
-        }
-        return copy;
-    }
-
     public double getMinX() {
     	return -width/2;
     }
