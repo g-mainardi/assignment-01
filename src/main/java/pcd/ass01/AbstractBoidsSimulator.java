@@ -1,6 +1,8 @@
 package pcd.ass01;
 
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected BoidsModel model;
@@ -13,6 +15,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected int framerate;
 
     private int updateCounter = 0;
+    private final Lock updateCounterLock = new ReentrantLock();
 
     protected AbstractBoidsSimulator(BoidsModel model) {
         this.model = model;
@@ -24,11 +27,15 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     }
 
     public void resetUpdateCounter() {
+        updateCounterLock.lock();
         this.updateCounter = 0;
+        updateCounterLock.unlock();
     }
 
     public void incUpdateCounter() {
+        updateCounterLock.lock();
         this.updateCounter++;
+        updateCounterLock.unlock();
     }
 
     @Override
