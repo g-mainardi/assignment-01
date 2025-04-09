@@ -50,6 +50,7 @@ public class MyBarrier {
         cond.signalAll();
         if (runnable != null) {
             var toExecute = new Thread(runnable);
+            toExecute.setName("Barrier-Execution" + (runnableToWait? "-ToWait" : "") + extractThreadNumber(toExecute.getName()));
             toExecute.start();
             if (runnableToWait) {
                 try {
@@ -60,6 +61,16 @@ public class MyBarrier {
             }
         }
     }
+
+    public static String extractThreadNumber(String threadName) {
+        try {
+            String[] parts = threadName.split("-");
+            return "-" + parts[parts.length - 1];
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Stringa non valida: " + threadName);
+        }
+    }
+
 
     public void reset() {
         lock.lock();
