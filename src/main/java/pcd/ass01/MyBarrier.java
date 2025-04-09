@@ -12,14 +12,20 @@ public class MyBarrier {
     private boolean broken = false;
     private final int parties;
     private int counter = 0;
+    private final boolean runnableToWait;
 
     public MyBarrier(int parties) {
-        this(parties, null);
+        this(parties, null, false);
     }
 
     public MyBarrier(int parties, Runnable runnable) {
+        this(parties, runnable, false);
+    }
+
+    public MyBarrier(int parties, Runnable runnable, boolean runnableToWait) {
         this.parties = parties;
         this.runnable = runnable;
+        this.runnableToWait = runnableToWait;
     }
 
     public void await() throws InterruptedException, BrokenBarrierException {
@@ -43,7 +49,15 @@ public class MyBarrier {
         broken = true;
         cond.signalAll();
         if (runnable != null) {
-            runnable.run();
+            var toExecute = new Thread(runnable);
+            toExecute.start();
+            if (runnableToWait) {
+                try {
+                    toExecute.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Thread [" + Thread.currentThread().getName() + "] interrupted execution for barrier break");
+                }
+            }
         }
     }
 

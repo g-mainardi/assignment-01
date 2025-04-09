@@ -19,7 +19,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         boidsCopy = model.getBoidsCopy();
 
         List<List<Boid>> partitions = partitionByNumber(boidsCopy, THREADS_NUMBER);
-        MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER, this::updateBoidsFromCopy);
+        MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER, this::updateBoidsFromCopy, true);
         MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::incUpdateCounter);
 
         for (List<Boid> partition : partitions) {
