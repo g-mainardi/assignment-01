@@ -19,7 +19,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
 
         List<List<Boid>> partitions = partitionByNumber(boids, THREADS_NUMBER);
         MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER);
-        MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::incUpdateCounter);
+        MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::updateView);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
@@ -64,7 +64,6 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
                 } else if (toResume) {
                     resume();
                 }
-                view.ifPresent(BoidsView::update);
             } else if(!toStart) {
                 stop();
             }
