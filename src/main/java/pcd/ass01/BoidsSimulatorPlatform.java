@@ -14,8 +14,10 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
         super(model);
     }
 
-    private void initWorkers() {
-        List<List<Boid>> partitions = partitionByNumber(this.model.getBoids(), THREADS_NUMBER);
+    private void initWorkers(BoidsModel model) {
+        var boids = model.getBoids();
+
+        List<List<Boid>> partitions = partitionByNumber(boids, THREADS_NUMBER);
         MyBarrier velBarrier = new MyBarrier(THREADS_NUMBER);
         MyBarrier posBarrier = new MyBarrier(THREADS_NUMBER, this::updateView);
 
@@ -73,7 +75,7 @@ public class BoidsSimulatorPlatform extends AbstractBoidsSimulator implements Bo
     }
 
     protected void init() {
-        this.initWorkers();
+        this.initWorkers(this.model);
         this.workers.forEach(Thread::start);
     }
 
