@@ -7,6 +7,9 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected Optional<BoidsView> view;
     protected boolean toStart = false;
     protected boolean toResume = false;
+    private long startingTime;
+    private int iterations = 0;
+    private boolean iterationsPrinted = false;
 
     private static final int FRAMERATE = 50;
     protected int framerate;
@@ -24,6 +27,11 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     }
 
     protected void updateView() {
+        iterations++;
+        if (iterations == 100 && !iterationsPrinted) {
+            System.out.println("100 ITERATIONS IN SECONDS: " + (System.currentTimeMillis() - startingTime));
+            iterationsPrinted = true;
+        }
         if (view.isPresent()) {
             view.get().update();
             view.get().updateFrameRate(framerate);
@@ -56,6 +64,7 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
     protected void start() {
         this.model.generateBoids();
         init();
+        this.startingTime = System.currentTimeMillis();
         this.t0 = System.currentTimeMillis();
         this.toStart = false;
         this.view.ifPresent(BoidsView::enableStartStopButton);
@@ -65,6 +74,8 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
         clear();
         this.model.clearBoids();
         this.toStart = true;
+        this.iterationsPrinted = false;
+        this.iterations = 0;
         if (model.isSuspended()){
             this.toResume = false;
             this.view.ifPresent(BoidsView::resumeAction);
