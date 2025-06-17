@@ -22,11 +22,12 @@ class BoidsModel(
   def resume(): Unit = isSuspended = false
 
   def generateBoids(): Unit =
-    for (i <- 0 until nBoids) {
-      val pos = new P2d(-width / 2 + Math.random * width, -height / 2 + Math.random * height)
-      val vel = new V2d(Math.random * maxSpeed / 2 - maxSpeed / 4, Math.random * maxSpeed / 2 - maxSpeed / 4)
-      boids = boids :+ Boid(pos, vel)
-    }
+    boids = (for
+      _  <- 0 to nBoids
+      pos = P2d(-width / 2 + Math.random * width, -height / 2 + Math.random * height)
+      vel = V2d(Math.random * maxSpeed / 2 - maxSpeed / 4, Math.random * maxSpeed / 2 - maxSpeed / 4)
+    yield
+      Boid(pos, vel)).toList
 
   def clearBoids(): Unit =
     nBoids = 0
