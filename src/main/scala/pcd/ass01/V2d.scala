@@ -15,16 +15,15 @@ package pcd.ass01
  * objects are completely state-less
  *
  */
-final class V2d(val x: Double, val y: Double) {
+case class V2d(x: Double, y: Double):
 
-  def sum(v: V2d) = V2d(x + v.x, y + v.y)
+  def sum(v: V2d): V2d = V2d(x + v.x, y + v.y)
   def abs: Double = Math.sqrt(x * x + y * y)
 
   def getNormalized: V2d = 
     val module = Math.sqrt(x * x + y * y)
-    new V2d(x / module, y / module)
+    V2d(x / module, y / module)
 
-  def mul(fact: Double) = V2d(x * fact, y * fact)
+  def mul(fact: Double): V2d = V2d(x * fact, y * fact)
 
   override def toString: String = "V2d(" + x + "," + y + ")"
-}

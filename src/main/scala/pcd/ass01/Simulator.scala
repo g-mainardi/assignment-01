@@ -13,22 +13,15 @@ class BoidsSimulatorSequential(protected val model: BoidsModel) {
   protected var toResume = false
 
   private var startingTime = 0L
-  private var iterations = 0
-  private var iterationsPrinted = false
   protected var framerate = 0
   private var t0 = 0L
 
   def attachView(view: BoidsView): Unit = this.view = Some(view)
 
-  def clear(): Unit = ()
-  def init(): Unit = ()
+//  def clear(): Unit = ()
+//  def init(): Unit = ()
 
   protected def updateView(): Unit =
-    iterations += 1
-    if (iterations == 100 && !iterationsPrinted)
-      println(s"100 ITERATIONS IN SECONDS: ${System.currentTimeMillis - startingTime}")
-      iterationsPrinted = true
-
     view foreach : v =>
       v.update()
       v updateFrameRate framerate
@@ -53,20 +46,18 @@ class BoidsSimulatorSequential(protected val model: BoidsModel) {
 
   protected def start(): Unit =
     model.generateBoids()
-    init()
+//    init()
     startingTime = System.currentTimeMillis
     t0 = System.currentTimeMillis
     toStart = false
     view foreach (_.enableStartStopButton())
 
   protected def stop(): Unit =
-    clear()
+//    clear()
     model.clearBoids()
     toStart = true
-    iterationsPrinted = false
-    iterations = 0
 
-    if (model.isSuspended)
+    if model.isSuspended then
       toResume = false
       view foreach (_.resumeAction())
 

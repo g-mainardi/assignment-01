@@ -6,10 +6,10 @@ package pcd.ass01
  * objects are completely state-less
  *
  */
-final class P2d(val x: Double, val y: Double) {
+case class P2d(x: Double, y: Double):
 
-  def sum(v: V2d) = P2d(x + v.x, y + v.y)
-  def sub(v: P2d) = V2d(x - v.x, y - v.y)
+  def sum(v: V2d): P2d = P2d(x + v.x, y + v.y)
+  def sub(v: P2d): V2d = V2d(x - v.x, y - v.y)
 
   def distance(p: P2d): Double =
     val dx = p.x - x
@@ -17,4 +17,3 @@ final class P2d(val x: Double, val y: Double) {
     Math.sqrt(dx * dx + dy * dy)
 
   override def toString: String = "P2d(" + x + "," + y + ")"
-}

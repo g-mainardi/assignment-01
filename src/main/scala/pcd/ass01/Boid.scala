@@ -1,9 +1,6 @@
 package pcd.ass01
 
 class Boid(var pos: P2d, var vel: V2d) {
-  def this(other: Boid)  =
-    this(other.pos, other.vel)
-
   private enum Parameter:
     case Separation
     case Alignment

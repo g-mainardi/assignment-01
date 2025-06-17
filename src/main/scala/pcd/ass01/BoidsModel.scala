@@ -1,24 +1,20 @@
 package pcd.ass01
 
-class BoidsModel(
-                  var nBoids: Int,
-                  var separationWeight: Double,
-                  var alignmentWeight: Double,
-                  var cohesionWeight: Double,
-                  val width: Double, val height: Double,
-                  val maxSpeed: Double,
-                  val perceptionRadius: Double,
-                  val avoidRadius: Double) {
-  var boids: List[Boid] = List[Boid]()
-  var isRunning = false
+class BoidsModel(var nBoids: Int,
+                 var separationWeight: Double,
+                 var alignmentWeight: Double,
+                 var cohesionWeight: Double,
+                 val width: Double, val height: Double,
+                 val maxSpeed: Double,
+                 val perceptionRadius: Double,
+                 val avoidRadius: Double) :
+  var boids: List[Boid] = List()
+  var isRunning   = false
   var isSuspended = false
 
   def turnOn(): Unit = isRunning = true
-
   def turnOff(): Unit = isRunning = false
-
   def suspend(): Unit = isSuspended = true
-
   def resume(): Unit = isSuspended = false
 
   def generateBoids(): Unit =
@@ -31,7 +27,7 @@ class BoidsModel(
 
   def clearBoids(): Unit =
     nBoids = 0
-    boids = List[Boid]()
+    boids = List()
 
   def getMinX: Double = -width / 2
   def getMaxX: Double = width / 2
@@ -41,6 +37,4 @@ class BoidsModel(
   def setSeparationWeight(value: Double): Unit = separationWeight = value
   def setAlignmentWeight(value: Double): Unit = alignmentWeight = value
   def setCohesionWeight(value: Double): Unit = cohesionWeight = value
-
   def setBoidsNumber(n: Int): Unit = nBoids = n
-}

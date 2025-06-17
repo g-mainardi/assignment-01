@@ -116,14 +116,14 @@ public class BoidsSimulatorSequential {
     }
 
     private void updateBoids() {
-//        var boids = model.getBoids();
+        var boids = model.getBoids();
 
-//        for (Boid boid : boids) {
-//            boid.updateVelocity(model);
-//        }
-//
-//        for (Boid boid : boids) {
-//            boid.updatePos(model);
-//        }
+        for (Boid boid : boids) {
+            boid.updateVelocity(model);
+        }
+
+        for (Boid boid : boids) {
+            boid.updatePos(model);
+        }
     }
 }
