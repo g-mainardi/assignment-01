@@ -36,8 +36,6 @@ class BoidsPanel(val width: Int, val height: Int, private val model: BoidsModel)
 
   override protected def paintComponent(g: Graphics): Unit =
     super.paintComponent(g)
-    println(s"Printing boids... but I see ${model.boids}")
-
     given Conversion[P2d, (Double, Double)] = pos => (pos.x, pos.y)
 
     setBackground(Color.WHITE)
@@ -49,13 +47,10 @@ class BoidsPanel(val width: Int, val height: Int, private val model: BoidsModel)
     for
       boid <- model.boids
       (x, y) = boid.pos: (Double, Double)
-      px = (width / 2 + x * xScale).toInt
+      px = (width  / 2 + x * xScale).toInt
       py = (height / 2 - y * xScale).toInt
-    do {
+    do
       g fillOval(px, py, 5, 5)
-      // todo
-      println(s"Printing boid ($px, $py)")
-    }
 
     g setColor Color.BLACK
     g drawString(s"Num. Boids: ${model.nBoids}", 10, 25)
@@ -156,7 +151,7 @@ class BoidsView(private val model: BoidsModel, val width: Int, val height: Int) 
   private def disableNumBoidsField(): Unit = BoidsNumberField setEnabled false
   private def disableStartAndStopButton(): Unit = StartAndStopButton setEnabled false
   private def disableSuspendResumeButton(): Unit = SuspendResumeButton setEnabled false
-  private def resetBoidsNumberField(): Unit = BoidsNumberField setText BoidsSimulation.N_BOIDS.toString
+  private def resetBoidsNumberField(): Unit = BoidsNumberField setText SimulationParameter.N_BOIDS.toString
 
   override def stateChanged(e: ChangeEvent): Unit =
     val separation = SeparationSlider; val cohesion = CohesionSlider
