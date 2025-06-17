@@ -1,4 +1,4 @@
-package pcd.ass01;
+package pcd.ass02;
 
 public class BoidsSimulation {
 
@@ -16,7 +16,6 @@ public class BoidsSimulation {
 
 	final static int SCREEN_WIDTH = 1280;
 	final static int SCREEN_HEIGHT = 720;
-	
 
     public static void main(String[] args) {      
     	var model = new BoidsModel(
@@ -25,8 +24,8 @@ public class BoidsSimulation {
     					ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT,
     					MAX_SPEED,
     					PERCEPTION_RADIUS,
-    					AVOID_RADIUS); 
-    	var sim = BoidsSimulator.getSimulator(model, SimulatorType.VIRTUAL);
+    					AVOID_RADIUS);
+    	var sim = new BoidsSimulatorSequential(model);
     	var view = new BoidsView(model, SCREEN_WIDTH, SCREEN_HEIGHT);
     	sim.attachView(view);
     	sim.runSimulation();

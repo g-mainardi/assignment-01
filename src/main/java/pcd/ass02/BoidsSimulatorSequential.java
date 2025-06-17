@@ -1,8 +1,9 @@
-package pcd.ass01;
+package pcd.ass02;
 
 import java.util.Optional;
 
-public abstract class AbstractBoidsSimulator implements BoidsSimulator {
+public class BoidsSimulatorSequential {
+
     protected BoidsModel model;
     protected Optional<BoidsView> view;
     protected boolean toStart = false;
@@ -16,12 +17,11 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
 
     private long t0;
 
-    protected AbstractBoidsSimulator(BoidsModel model) {
+    public BoidsSimulatorSequential(BoidsModel model) {
         this.model = model;
         this.view = Optional.empty();
     }
 
-    @Override
     public void attachView(BoidsView view) {
         this.view = Optional.of(view);
     }
@@ -87,8 +87,43 @@ public abstract class AbstractBoidsSimulator implements BoidsSimulator {
         });
     }
 
-    protected abstract void clear();
+    protected void clear() {}
+    protected void init() {}
 
-    protected abstract void init();
+    public void runSimulation() {
+        this.toStart = true;
+        this.toResume = false;
+        while (true) {
+            if (model.isRunning()) {
+                if (toStart) {
+                    start();
+                }
+                if (model.isSuspended()) {
+                    if(!toResume) {
+                        suspend();
+                    }
+                } else {
+                    if (toResume) {
+                        resume();
+                    }
+                    updateBoids();
+                }
+                updateView();
+            } else if (!toStart) {
+                stop();
+            }
+        }
+    }
 
+    private void updateBoids() {
+//        var boids = model.getBoids();
+
+//        for (Boid boid : boids) {
+//            boid.updateVelocity(model);
+//        }
+//
+//        for (Boid boid : boids) {
+//            boid.updatePos(model);
+//        }
+    }
 }

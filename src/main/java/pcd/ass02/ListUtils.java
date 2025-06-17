@@ -1,4 +1,4 @@
-package pcd.ass01;
+package pcd.ass02;
 
 import java.util.*;
 import java.util.stream.IntStream;
