@@ -20,21 +20,20 @@ class Boid(var pos: P2d, var vel: V2d) {
     if pos.y >= model.getMaxY then pos = pos sum V2d(0, -model.height)
 
   private def getNearbyBoids(model: BoidsModel) = model.boids filter : other =>
-    (other ne this) && (pos.distance(other.pos) < model.perceptionRadius)
+    (other ne this) && posInRadius(other.pos, model.perceptionRadius)
 
   private def calculate(boids: List[Boid], model: BoidsModel)(a: Attribute): V2d = (a match
     case SEPARATION => calculateSeparation
     case ALIGNMENT  => calculateAlignment
     case COHESION   => calculateCohesion)(boids, model)
 
-  private def calculateAll(t: Boid => Vector2d)(nearbyBoids: List[Boid], model: BoidsModel) =
-    import scala.language.implicitConversions
-    given Conversion[Double, Int] = _.toInt
+  private def calculateAll(getVector: Boid => Vector2d)(nearbyBoids: List[Boid], model: BoidsModel) =
     if nearbyBoids.nonEmpty
     then
-      val (avgVx, avgVy) = nearbyBoids.map(t).foldLeft((0,0)): (acc, nearBoidAttr) =>
-        (acc._1 + nearBoidAttr.x, acc._2 + nearBoidAttr.y)
-      V2d(avgVx / nearbyBoids.size - vel.x, avgVy / nearbyBoids.size - vel.y).getNormalized
+      val vec = getVector(this)
+      val (avgX, avgY) = nearbyBoids.map(getVector)
+        .foldLeft((.0,.0)){(acc, other) => (acc._1 + other.x, acc._2 + other.y)}
+      V2d(avgX / nearbyBoids.size - vec.x, avgY / nearbyBoids.size - vec.y).getNormalized
     else
       V2d(0, 0)
 
@@ -45,15 +44,13 @@ class Boid(var pos: P2d, var vel: V2d) {
     calculateAll(_.pos)(nearbyBoids, model)
 
   private def calculateSeparation(nearbyBoids: List[Boid], model: BoidsModel) =
-    import scala.language.implicitConversions
-    given Conversion[Double, Int] = _.toInt
-    nearbyBoids.foldLeft((0, 0, 0)) { (acc, boid) =>
-      val otherPos = boid.pos
-      if pos.distance(otherPos) < model.avoidRadius
-      then
-        (acc._1 + pos.x - otherPos.x, acc._2 + pos.y - otherPos.y, acc._3 + 1)
+    nearbyBoids.map(_.pos).foldLeft((P2d(.0, .0), 0)) { (acc, other) =>
+      if posInRadius(other, model.avoidRadius)
+      then (acc._1 sum(pos sub other), acc._2 + 1)
       else acc
     } match
-      case (_, _, 0)       => V2d(0,0)
-      case (dx, dy, count) => V2d(dx / count, dy / count).getNormalized
+      case (_, 0)       => V2d(0,0)
+      case (P2d(dx, dy), count) => V2d(dx / count, dy / count).getNormalized
+
+  private def posInRadius(other: P2d, radius: Double): Boolean = radius > (pos distance other)
 }
