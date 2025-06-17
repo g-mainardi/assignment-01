@@ -1,20 +1,14 @@
 package pcd.ass01
 
 class Boid(var pos: P2d, var vel: V2d) {
-  private enum Parameter:
-    case Separation
-    case Alignment
-    case Cohesion
-
-  import Parameter.*
+  import Attribute.*
 
   def updateVelocity(model: BoidsModel): Unit =
     val calc = calculate(getNearbyBoids(model), model)
-
     vel = vel
-      .sum(calc(Alignment)  mul model.alignmentWeight)
-      .sum(calc(Separation) mul model.separationWeight)
-      .sum(calc(Cohesion)   mul model.cohesionWeight)
+      .sum(calc(ALIGNMENT)  mul model.alignmentWeight)
+      .sum(calc(SEPARATION) mul model.separationWeight)
+      .sum(calc(COHESION)   mul model.cohesionWeight)
 
     if vel.abs > model.maxSpeed then vel = vel.getNormalized mul model.maxSpeed
 
@@ -28,12 +22,13 @@ class Boid(var pos: P2d, var vel: V2d) {
   private def getNearbyBoids(model: BoidsModel) = model.boids filter : other =>
     (other ne this) && (pos.distance(other.pos) < model.perceptionRadius)
 
-  private def calculate(boids: List[Boid], model: BoidsModel)(p: Parameter): V2d = (p match
-    case Separation => calculateSeparation
-    case Alignment => calculateAlignment
-    case Cohesion => calculateCohesion)(boids, model)
+  private def calculate(boids: List[Boid], model: BoidsModel)(a: Attribute): V2d = (a match
+    case SEPARATION => calculateSeparation
+    case ALIGNMENT  => calculateAlignment
+    case COHESION   => calculateCohesion)(boids, model)
 
   private def calculateAll(t: Boid => P2d | V2d)(nearbyBoids: List[Boid], model: BoidsModel) =
+    import scala.language.implicitConversions
     given Conversion[Double, Int] = _.toInt
     if nearbyBoids.nonEmpty
     then
@@ -51,6 +46,7 @@ class Boid(var pos: P2d, var vel: V2d) {
     calculateAll(_.pos)(nearbyBoids, model)
 
   private def calculateSeparation(nearbyBoids: List[Boid], model: BoidsModel) =
+    import scala.language.implicitConversions
     given Conversion[Double, Int] = _.toInt
     nearbyBoids.foldLeft((0, 0, 0)) { (acc, boid) =>
       val otherPos = boid.pos
