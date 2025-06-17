@@ -29,7 +29,7 @@ object SeparationSlider extends MySlider
 object CohesionSlider extends MySlider
 object AlignmentSlider extends MySlider
 
-class BoidsPanel(val width: Int, val height: Int, private val model: BoidsModel) extends JPanel:
+class BoidsPanel(val panelWidth: Int, val panelHeight: Int, private val model: BoidsModel) extends JPanel:
   private var framerate = 0
 
   def setFrameRate(framerate: Int): Unit = this.framerate = framerate
@@ -39,7 +39,7 @@ class BoidsPanel(val width: Int, val height: Int, private val model: BoidsModel)
     given Conversion[P2d, (Double, Double)] = pos => (pos.x, pos.y)
 
     setBackground(Color.WHITE)
-    val xScale = width / model.width
+    val xScale = panelWidth / model.width
     //    val yScale = height / model.height
 
     // Draw Boids
@@ -47,8 +47,8 @@ class BoidsPanel(val width: Int, val height: Int, private val model: BoidsModel)
     for
       boid <- model.boids
       (x, y) = boid.pos: (Double, Double)
-      px = (width  / 2 + x * xScale).toInt
-      py = (height / 2 - y * xScale).toInt
+      px = (panelWidth  / 2 + x * xScale).toInt
+      py = (panelHeight / 2 - y * xScale).toInt
     do
       g fillOval(px, py, 5, 5)
 
