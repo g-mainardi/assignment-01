@@ -7,8 +7,11 @@ object BoidsSimulator {
 class BoidsSimulatorSequential(protected val model: BoidsModel) {
   protected var view: Option[BoidsView] = None
 
+  @volatile
   protected var toStart = false
+  @volatile
   protected var toResume = false
+
   private var startingTime = 0L
   private var iterations = 0
   private var iterationsPrinted = false
