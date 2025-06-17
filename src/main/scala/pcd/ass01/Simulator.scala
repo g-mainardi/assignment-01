@@ -1,0 +1,95 @@
+package pcd.ass01
+
+object BoidsSimulator {
+  val FRAMERATE = 50
+}
+
+class BoidsSimulatorSequential(protected val model: BoidsModel) {
+  protected var view: Option[BoidsView] = None
+
+  protected var toStart = false
+  protected var toResume = false
+  private var startingTime = 0L
+  private var iterations = 0
+  private var iterationsPrinted = false
+  protected var framerate = 0
+  private var t0 = 0L
+
+  def attachView(view: BoidsView): Unit = this.view = Some(view)
+
+  def clear(): Unit = ()
+  def init(): Unit = ()
+
+  protected def updateView(): Unit =
+    iterations += 1
+    if (iterations == 100 && !iterationsPrinted)
+      println(s"100 ITERATIONS IN SECONDS: ${System.currentTimeMillis - startingTime}")
+      iterationsPrinted = true
+
+    view foreach : v =>
+      v.update()
+      v updateFrameRate framerate
+      val dtElapsed = System.currentTimeMillis - t0
+      val frameratePeriod = 1000 / BoidsSimulator.FRAMERATE
+      t0 = System.currentTimeMillis
+      if dtElapsed < frameratePeriod
+      then
+        try Thread sleep (frameratePeriod - dtElapsed)
+        catch
+          case ignore: Exception => ()
+        framerate = BoidsSimulator.FRAMERATE
+      else framerate = (1000 / dtElapsed).toInt
+
+  protected def suspend(): Unit =
+    toResume = true
+    view foreach(_.enableSuspendResumeButton())
+
+  protected def resume(): Unit =
+    toResume = false
+    view foreach(_.enableSuspendResumeButton())
+
+  protected def start(): Unit =
+    model.generateBoids()
+    init()
+    startingTime = System.currentTimeMillis
+    t0 = System.currentTimeMillis
+    toStart = false
+    view foreach (_.enableStartStopButton())
+
+  protected def stop(): Unit =
+    clear()
+    model.clearBoids()
+    toStart = true
+    iterationsPrinted = false
+    iterations = 0
+
+    if (model.isSuspended)
+      toResume = false
+      view foreach (_.resumeAction())
+
+    view foreach : (v: BoidsView) =>
+      v.update()
+      v.updateFrameRate(0)
+      v.enableStartStopButton()
+
+  def runSimulation(): Unit =
+    toStart = true
+    toResume = false
+    while (true)
+      if model.isRunning
+      then
+        if toStart then start()
+        if model.isSuspended
+        then
+          if !toResume then suspend()
+        else
+          if toResume then resume()
+          updateBoids()
+        updateView()
+      else if !toStart then stop()
+
+  private def updateBoids(): Unit =
+    val boids = model.boids
+    boids foreach(_.updateVelocity(model))
+    boids foreach(_.updatePos(model))
+}
