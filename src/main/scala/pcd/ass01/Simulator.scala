@@ -1,4 +1,5 @@
 package pcd.ass01
+import scala.annotation.tailrec
 
 object BoidsSimulator {
   val FRAMERATE = 50
@@ -66,21 +67,26 @@ class BoidsSimulatorSequential(protected val model: BoidsModel) {
       v.updateFrameRate(0)
       v.enableStartStopButton()
 
+  @tailrec
+  private def loop(): Unit =
+    if model.isRunning then
+      if toStart then start()
+      if model.isSuspended then
+        if !toResume then suspend()
+      else
+        if toResume then resume()
+        updateBoids()
+      updateView()
+      loop()
+    else if !toStart then
+      stop()
+      loop()
+    else if view.isDefined then loop()
+
   def runSimulation(): Unit =
     toStart = true
     toResume = false
-    while (true)
-      if model.isRunning
-      then
-        if toStart then start()
-        if model.isSuspended
-        then
-          if !toResume then suspend()
-        else
-          if toResume then resume()
-          updateBoids()
-        updateView()
-      else if !toStart then stop()
+    loop()
 
   private def updateBoids(): Unit =
     val boids = model.boids
