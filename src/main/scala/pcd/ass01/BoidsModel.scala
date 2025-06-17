@@ -39,6 +39,11 @@ class BoidsModel(var nBoids: Int,
   def getMinY: Double = -height / 2
   def getMaxY: Double = height / 2
 
+  def getWeightOf(a: Attribute): Double = a match
+    case Attribute.SEPARATION => separationWeight
+    case Attribute.ALIGNMENT  => alignmentWeight
+    case Attribute.COHESION   => cohesionWeight
+
   def setWeight(a: Attribute, value: Double): Unit = a match
     case Attribute.SEPARATION => separationWeight = value
     case Attribute.ALIGNMENT  => alignmentWeight = value

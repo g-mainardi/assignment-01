@@ -5,11 +5,8 @@ class Boid(var pos: P2d, var vel: V2d) {
 
   def updateVelocity(model: BoidsModel): Unit =
     val calc = calculate(getNearbyBoids(model), model)
-    vel = vel
-      .sum(calc(ALIGNMENT)  mul model.alignmentWeight)
-      .sum(calc(SEPARATION) mul model.separationWeight)
-      .sum(calc(COHESION)   mul model.cohesionWeight)
-
+    vel = vel sum Attribute.values.foldLeft(V2d(.0, .0)): (acc, attr) =>
+      acc sum (calc(attr) mul (model getWeightOf attr))
     if vel.abs > model.maxSpeed then vel = vel.getNormalized mul model.maxSpeed
 
   def updatePos(model: BoidsModel): Unit =
