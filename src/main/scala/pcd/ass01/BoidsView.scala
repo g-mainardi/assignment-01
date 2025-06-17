@@ -15,6 +15,10 @@ object BoidsView {
   val RESUME = "resume"
 }
 
+private class SynchButton(text: String) extends JButton(text):
+  override def setEnabled(b: Boolean): Unit = synchronized(super.setEnabled(b))
+  override def isEnabled: Boolean = synchronized(super.isEnabled)
+
 class MySlider(val attribute: Attribute) extends JSlider(SwingConstants.HORIZONTAL, 0, 20, 10):
   setMajorTickSpacing(10)
   setMinorTickSpacing(1)
@@ -100,26 +104,24 @@ class BoidsView(private val model: BoidsModel, val width: Int, val height: Int) 
     this add new JLabel("Count")
     this add BoidsNumberField
     this add StartAndStopButton
+    StartAndStopButton addActionListener { _ => StartAndStopButton.getText match
+      case BoidsView.START =>
+        try
+          val newBoidsNumber = BoidsNumberField.getText.toInt
+          if newBoidsNumber <= 0 then throw new IllegalArgumentException
+          startAction(newBoidsNumber)
+        catch
+          case e: NumberFormatException => println("Input format not allowed!")
+          case e: IllegalArgumentException => println("Only positive numbers allowed!")
+      case BoidsView.STOP => stopAction()
+      case _ => ()
+    }
     this add SuspendResumeButton
 
   private object BoidsNumberField extends JTextField(5)
 
-  private object StartAndStopButton extends JButton(BoidsView.START):
-    this addActionListener { _ =>
-      this.getText match
-        case BoidsView.START =>
-          try
-            val newBoidsNumber = BoidsNumberField.getText.toInt
-            if newBoidsNumber <= 0 then throw new IllegalArgumentException
-            startAction(newBoidsNumber)
-          catch
-            case e: NumberFormatException => println("Input format not allowed!")
-            case e: IllegalArgumentException => println("Only positive numbers allowed!")
-        case BoidsView.STOP => stopAction()
-        case _ => ()
-    }
-
-  private object SuspendResumeButton extends JButton(BoidsView.SUSPEND)
+  private object StartAndStopButton extends SynchButton(BoidsView.START)
+  private object SuspendResumeButton extends SynchButton(BoidsView.SUSPEND)
 
   private def stopAction(): Unit =
     this.disableStartAndStopButton()
