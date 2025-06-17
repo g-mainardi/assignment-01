@@ -1,5 +1,7 @@
 package pcd.ass01
 
+import pcd.ass01.Attribute.*
+
 import javax.swing.*
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
@@ -13,7 +15,7 @@ object BoidsView {
   val RESUME = "resume"
 }
 
-class MySlider extends JSlider(SwingConstants.HORIZONTAL, 0, 20, 10):
+class MySlider(val attribute: Attribute) extends JSlider(SwingConstants.HORIZONTAL, 0, 20, 10):
   setMajorTickSpacing(10)
   setMinorTickSpacing(1)
   setPaintTicks(true)
@@ -25,9 +27,9 @@ class MySlider extends JSlider(SwingConstants.HORIZONTAL, 0, 20, 10):
   setLabelTable(labelTable)
   setPaintLabels(true)
 
-object SeparationSlider extends MySlider
-object CohesionSlider extends MySlider
-object AlignmentSlider extends MySlider
+object SeparationSlider extends MySlider(SEPARATION)
+object CohesionSlider extends MySlider(COHESION)
+object AlignmentSlider extends MySlider(ALIGNMENT)
 
 class BoidsPanel(val panelWidth: Int, val panelHeight: Int, private val model: BoidsModel) extends JPanel:
   private var framerate = 0
@@ -36,6 +38,7 @@ class BoidsPanel(val panelWidth: Int, val panelHeight: Int, private val model: B
 
   override protected def paintComponent(g: Graphics): Unit =
     super.paintComponent(g)
+    import scala.language.implicitConversions
     given Conversion[P2d, (Double, Double)] = pos => (pos.x, pos.y)
 
     setBackground(Color.WHITE)
@@ -153,10 +156,7 @@ class BoidsView(private val model: BoidsModel, val width: Int, val height: Int) 
   private def disableSuspendResumeButton(): Unit = SuspendResumeButton setEnabled false
   private def resetBoidsNumberField(): Unit = BoidsNumberField setText SimulationParameter.N_BOIDS.toString
 
-  override def stateChanged(e: ChangeEvent): Unit =
-    val separation = SeparationSlider; val cohesion = CohesionSlider
-    e.getSource match
-      case `separation` => model setSeparationWeight(0.1 * SeparationSlider.getValue)
-      case `cohesion`   => model setCohesionWeight(0.1 * CohesionSlider.getValue)
-      case _            => model setAlignmentWeight(0.1 * AlignmentSlider.getValue)
+  override def stateChanged(e: ChangeEvent): Unit = e.getSource match
+    case s:MySlider => model setWeight(s.attribute, s.getValue)
+    case _ => ()
 }

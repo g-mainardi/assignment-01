@@ -1,5 +1,10 @@
 package pcd.ass01
 
+enum Attribute:
+  case SEPARATION
+  case ALIGNMENT
+  case COHESION
+
 class BoidsModel(var nBoids: Int,
                  var separationWeight: Double,
                  var alignmentWeight: Double,
@@ -34,7 +39,9 @@ class BoidsModel(var nBoids: Int,
   def getMinY: Double = -height / 2
   def getMaxY: Double = height / 2
 
-  def setSeparationWeight(value: Double): Unit = separationWeight = value
-  def setAlignmentWeight(value: Double): Unit = alignmentWeight = value
-  def setCohesionWeight(value: Double): Unit = cohesionWeight = value
+  def setWeight(a: Attribute, value: Double): Unit = a match
+    case Attribute.SEPARATION => separationWeight = value
+    case Attribute.ALIGNMENT  => alignmentWeight = value
+    case Attribute.COHESION   => cohesionWeight = value
+
   def setBoidsNumber(n: Int): Unit = nBoids = n
