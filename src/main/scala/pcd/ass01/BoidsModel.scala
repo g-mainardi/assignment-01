@@ -24,7 +24,7 @@ class BoidsModel(var nBoids: Int,
 
   def generateBoids(): Unit =
     boids = (for
-      _     <- 0 to nBoids
+      _     <- 0 until nBoids
       origin = P2d(-width / 2, -height / 2)
       pos    = origin sum V2d(Math.random * width, Math.random * height)
       rndVel = V2d(Math.random, Math.random) mul (maxSpeed / 2)
