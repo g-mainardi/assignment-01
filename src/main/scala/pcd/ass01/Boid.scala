@@ -27,14 +27,13 @@ class Boid(var pos: P2d, var vel: V2d) {
     case ALIGNMENT  => calculateAlignment
     case COHESION   => calculateCohesion)(boids, model)
 
-  private def calculateAll(t: Boid => P2d | V2d)(nearbyBoids: List[Boid], model: BoidsModel) =
+  private def calculateAll(t: Boid => Vector2d)(nearbyBoids: List[Boid], model: BoidsModel) =
     import scala.language.implicitConversions
     given Conversion[Double, Int] = _.toInt
     if nearbyBoids.nonEmpty
     then
-      val (avgVx, avgVy) = nearbyBoids.foldLeft((0,0)): (acc, boid) =>
-        val other = boid.vel
-        (acc._1 + other.x, acc._2 + other.y)
+      val (avgVx, avgVy) = nearbyBoids.map(t).foldLeft((0,0)): (acc, nearBoidAttr) =>
+        (acc._1 + nearBoidAttr.x, acc._2 + nearBoidAttr.y)
       V2d(avgVx / nearbyBoids.size - vel.x, avgVy / nearbyBoids.size - vel.y).getNormalized
     else
       V2d(0, 0)

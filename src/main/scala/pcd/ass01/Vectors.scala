@@ -9,13 +9,18 @@
  */
 package pcd.ass01
 
+trait Vector2d:
+  def x: Double
+  def y: Double
+  override def toString: String = s"$getClass(" + x + "," + y + ")"
+
 /**
  *
  * 2-dimensional vector
  * objects are completely state-less
  *
  */
-case class V2d(x: Double, y: Double):
+case class V2d(x: Double, y: Double) extends Vector2d:
 
   def sum(v: V2d): V2d = V2d(x + v.x, y + v.y)
   def abs: Double = Math.sqrt(x * x + y * y)
@@ -26,4 +31,12 @@ case class V2d(x: Double, y: Double):
 
   def mul(fact: Double): V2d = V2d(x * fact, y * fact)
 
-  override def toString: String = "V2d(" + x + "," + y + ")"
+case class P2d(x: Double, y: Double) extends Vector2d:
+
+  def sum(v: V2d): P2d = P2d(x + v.x, y + v.y)
+  def sub(v: P2d): V2d = V2d(x - v.x, y - v.y)
+
+  def distance(p: P2d): Double =
+    val dx = p.x - x
+    val dy = p.y - y
+    Math.sqrt(dx * dx + dy * dy)
